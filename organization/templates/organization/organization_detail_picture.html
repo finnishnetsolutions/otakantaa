@@ -1,0 +1,14 @@
+{% include "organization/organization_picture.html" %}
+{% load bootstrap3 i18n %}
+
+<div class="cleafix"></div>
+{% if object in perm.organization.CanEditOrganization %}
+    <div class="btn-group">
+        {% if object.picture %}
+            <a class="btn btn-default ajaxy-link" href="{% url 'organization:edit_picture' object.pk %}">{% bootstrap_icon "edit" %} {% trans "Vaihda kuva" %}</a>
+            <a class="btn btn-default ajaxy-link" data-ajaxy-method="post" href="{% url 'organization:delete_picture' object.pk %}">{% bootstrap_icon "remove" %} {% trans "Poista kuva" %}</a>
+        {% else %}
+            <a class="btn btn-default ajaxy-link" href="{% url 'organization:edit_picture' object.pk %}">{% bootstrap_icon "plus" %} {% trans "Lisää kuva" %}</a>
+        {% endif %}
+    </div>
+{% endif %}

@@ -1,0 +1,15 @@
+{% load favorites bootstrap3 %}
+
+{% if ct_natural_key %}
+    {% fav_get_ct_id ct_natural_key as ct_id %}
+    {% fav_list ct_id object True as obj_list %}
+{% endif %}
+
+{% if object == request.user %}
+    <form class="ajaxy-form"  novalidate method="get" action="{% url 'account:scheme_list' user_id=object.pk %}">
+        {% bootstrap_form form %}
+        <div class="clearfix"></div>
+    </form>
+{% endif %}
+
+{% include 'scheme/scheme_list.html' with object_list=obj_list show_tags=True %}

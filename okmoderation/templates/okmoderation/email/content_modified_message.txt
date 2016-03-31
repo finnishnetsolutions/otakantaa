@@ -1,0 +1,3 @@
+{% extends "otakantaa/email/base.txt" %}{% load i18n configs %}{% block content %}{% blocktrans %}Otakantaa.fi-palvelun moderaattori on käsitellyt kirjoittamaasi sisältöä.
+Moderaattorin viesti: "{{ reason }}"{% endblocktrans %}.
+{% trans "Linkki sisältöön:" %} {% base_url as url %}{{ url }}{{ link }}.{% endblock content %}

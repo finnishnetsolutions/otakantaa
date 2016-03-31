@@ -1,0 +1,4 @@
+{% extends 'otakantaa/email/base.txt' %}{% load i18n %}
+{% block content %}{% blocktrans %}Sinulle on lähetetty hankkeesta '{{ title }}' luotu {{ format }}-tiedosto.{% endblocktrans %}
+
+{% trans "Löydät tiedoston tämän sähköpostin liitetiedostoista." %}{% endblock content %}

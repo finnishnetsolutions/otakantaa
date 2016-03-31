@@ -1,0 +1,20 @@
+{% extends "otakantaa/base.html" %}
+
+{% load i18n bootstrap3 %}
+
+{% block title %}{% trans "Hankkeen lataaminen" %}- {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% block content_header %}
+        <h1>{{ scheme.title }}</h1>
+        <h2>{% blocktrans %}Hankkeen lataaminen {{ format }}-muodossa{% endblocktrans %}</h2>
+    {% endblock content_header %}
+
+    {% block content_form %}
+        <form class="export-form">
+            {% bootstrap_form form %}
+            <input type="submit" name="submit" class="btn btn-primary" value="{% blocktrans %}Lataa/Lähetä {{ format }}-tiedosto{% endblocktrans %}">
+            <a href="{% url 'content:scheme_detail' scheme_id=scheme.pk %}" class="btn btn-default">{% trans "Takaisin hankkeeseen" %}</a>
+        </form>
+    {% endblock content_form %}
+{% endblock content %}

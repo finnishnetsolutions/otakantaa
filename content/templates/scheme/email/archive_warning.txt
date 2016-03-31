@@ -1,0 +1,5 @@
+{% extends "otakantaa/email/base.txt" %}{% load i18n %}{% block content %}{% blocktrans with title=object.title %}Otakantaa.fi hanke '{{ title }}' on ollut koskematon {{ idle_days }} päivää ja päätetään automaattisesti {{ days_to_archive }} päivän kuluttua.{% endblocktrans %}
+
+{% blocktrans %}Voit estää hankkeen automaattisen päättämisen kirjautumalla palveluun. Voit myös kirjoittaa hankkeeseen lisätietoja siitä, että hanke on edelleen käynnissä sekä milloin uusia kyselyjä tai keskusteluja on luvassa. {% endblocktrans %}
+
+{% blocktrans %}Jos haluat päättää hankkeen, voit tehdä sen hankkeen Työkalut-valikosta. Lisää myös päättämisen yhteydessä yhteenveto hankkeelle. {% endblocktrans %}{% endblock content %}

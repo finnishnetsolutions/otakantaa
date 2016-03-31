@@ -1,0 +1,62 @@
+{% extends 'otakantaa/base.html' %}
+
+{% load i18n bootstrap3 %}
+
+{% block content %}
+    <h1>{% trans "Rekisteröityminen" %}</h1>
+    <p>{% trans 'Täytä alla olevat tiedot viedäksesi rekisteröitymisen loppuun. Kaikki kohdat ovat pakollisia.' %}</p>
+    <hr />
+
+    <form method="post" class="narrow-form" novalidate>
+        {% csrf_token %}
+        {% if facebook %}
+            <div class="facebook-profile-pic-wrap">
+                <img src="http://graph.facebook.com/{{ facebook_id }}/picture?type=large" alt="{% trans 'Facebook profiilikuva' %}" /><br />
+                <p>{% trans "Käytetäänkö Facebookin profiilikuvaa?" %}</p>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="facebook_pic" value="yes" checked />
+                        {% trans 'Kyllä' %}
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="facebook_pic" value="no" />
+                        {% trans 'Ei' %}
+                    </label>
+                </div>
+            </div>
+        {% endif %}
+        {% bootstrap_form forms.user %}
+        {% bootstrap_form forms.usersettings %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary">
+                {% bootstrap_icon "share" %} {% trans "Rekisteröidy" %}
+            </button>
+        {% endbuttons %}
+    </form>
+
+{% endblock content %}
+
+{% block js_extra %}
+    <script type="text/javascript">
+        $(function() {
+            var org_selectors = '#id_usersettings-existing_organization_wrap, #id_usersettings-new_organization_wrap';
+
+            $('#id_usersettings-connect_to_organization').on('change', function() {
+                if ($(this).prop('checked') === true) {
+                    $(org_selectors).show();
+                    $('#id_usersettings-existing_organization').trigger('change');
+                } else {
+                    $(org_selectors).hide();
+                }
+            });
+
+            $('#id_usersettings-existing_organization').on('change', function() {
+                $('#id_usersettings-new_organization_wrap').toggle($(this).val() === '');
+            });
+
+            $('#id_usersettings-connect_to_organization').trigger('change');
+        });
+    </script>
+{% endblock js_extra %}

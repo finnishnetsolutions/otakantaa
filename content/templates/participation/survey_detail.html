@@ -1,0 +1,70 @@
+{% extends 'participation/participation_base.html' %}
+
+{% load i18n fontawesome %}
+
+{% block title %}{% trans "Kysely" %}: {{ object }} - {{ block.super }}{% endblock title %}
+
+{% block precontent %}
+    {% include 'otakantaa/temp/kommentointi_painike.html' with toiminto='kysely' %}
+{% endblock precontent %}
+
+{% block content_participation_count %}
+    {% include "participation/survey_count.html" with count=survey.submissions.count %}
+{% endblock content_participation_count %}
+
+{% block content_details %}
+    {% trans "Kysely" %} {{ block.super }}
+{% endblock content_details %}
+
+{% block content_subcontent %}
+    {% if survey in perm.survey.CanEditSurvey %}
+        <div class="survey-edit-buttons">
+            {% if edit_mode %}
+                <a href="{% url 'content:participation:survey_detail' scheme_id=object.scheme_id participation_detail_id=object.pk %}" class="btn btn-default survey-answer-mode-btn">
+                    {% trans "Lopeta muokkaus" %}
+                </a>
+            {% else %}
+                <a href="{% url 'content:participation:survey_edit' scheme_id=object.scheme_id participation_detail_id=object.pk %}" class="btn btn-default survey-edit-mode-btn">
+                    {% trans "Muokkaa kyselyä" %}
+                </a>
+            {% endif %}
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" id="show-results-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {% trans "Ketkä näkevät vastaukset?" %}
+                </button>
+                <ul class="dropdown-menu ajaxy-wrap">
+                    {% include "participation/survey_show_results_items.html" %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if request.participation_detail in perm.content.NeedsLoginForParticipation %}
+        <div class="alert alert-info">{% trans "Vain kirjautuneet käyttäjät voivat osallistua tähän kyselyyn" %}</div>
+    {% endif %}
+
+    {% if not edit_mode %}
+        <p>{% trans "Kyselyn pakolliset kysymykset on merkitty (*) tähtimerkillä." %}</p>
+    {% endif %}
+
+    {% if edit_mode %}
+        {% include "survey/survey_form.html" %}
+    {% else %}
+        {% include "survey/survey_answer_mode.html" %}
+    {% endif %}
+
+    {% if survey in perm.survey.CanEditSurvey and edit_mode %}
+        <div class="margin-top-1">
+            {% if edit_mode %}
+                <a href="{% url 'content:participation:survey_detail' scheme_id=object.scheme_id participation_detail_id=object.pk %}" class="btn btn-default survey-answer-mode-btn">
+                    {% trans "Lopeta muokkaus" %}
+                </a>
+            {% else %}
+                <a href="{% url 'content:participation:survey_edit' scheme_id=object.scheme_id participation_detail_id=object.pk %}" class="btn btn-default survey-edit-mode-btn">
+                    {% trans "Muokkaa kyselyä" %}
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock content_subcontent %}

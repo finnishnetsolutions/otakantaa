@@ -1,0 +1,94 @@
+{% extends 'otakantaa/base.html' %}
+
+{% load i18n active_class staticfiles favorites fontawesome %}
+
+{% block precontent %}
+    {% include 'otakantaa/temp/kommentointi_painike.html' with toiminto='omasivu' %}
+{% endblock precontent %}
+
+{% block title %}{% trans "Oma sivu" %} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% if object.status == object.STATUS_AWAITING_ACTIVATION %}
+        <div class="alert alert-warning">{% trans "Käyttäjä ei ole vielä vahvistanut rekisteröitymistään." %}</div>
+    {% elif object.status == object.STATUS_ARCHIVED %}
+        <div class="alert alert-warning">{% trans "Käyttäjä on poistanut profiilinsa." %}</div>
+    {% endif %}
+    <header>
+        {% if object in perm.account.CanEditUser %}
+            <a class="btn btn-primary btn-lg btn-green pull-right" href="{% url "content:create_scheme" %}">{% trans "Tee uusi hanke" %}</a>
+        {% endif %}
+
+        <h1>
+            {% fa_icon "user" alt=_("Profiili-ikoni") %}
+            {% if request.user == object %}
+                {% trans "Oma sivu" %}
+            {% else %}
+                {% trans "Julkinen profiili" %}
+            {% endif %}
+        </h1>
+        <ul class="nav nav-tabs nav-justified margin-top-1">
+            {% if object in perm.account.CanEditUser %}
+                <li {% class_active_if_url 'account:profile' %}><a href="{% url 'account:profile' user_id=object.pk %}">{% trans "Yhteenveto" %}</a></li>
+                <li {% class_active_if_url "account:messages" %}{% class_active_if_url "account:show_message" %}{% class_active_if_url "account:create_message" %}>
+                    <a href="{% url 'account:messages' user_id=object.pk %}">{% trans "Viestit" %} <span class="msg-count">{{ object.unread_messages_count }}</span></a>
+                </li>
+                <li {% class_active_if_url 'account:settings' %}><a href="{% url 'account:settings' user_id=object.pk %}">{% trans "Omat tiedot ja asetukset" %}</a></li>
+                <li {% class_active_if_url 'account:password' %}><a href="{% url 'account:password' user_id=object.pk %}">{% trans "Vaihda salasana" %}</a></li>
+            {% endif %}
+        </ul>
+        {% block summary %}
+            <div class="row">
+                <div class="col-md-4 margin-top-1">
+                    {% block profile_pic %}
+                        <div class="circular-profile-pic">
+                            {% include "account/profile_picture.html" with user=object no_link=True %}
+                        </div>
+                    {% endblock profile_pic %}
+                </div>
+                <div class="col-md-6">
+                    {% block content_right_part %}
+                        <ul class="stats">
+                            <li>{% trans "Hankkeita" %}: {{ schemes.count }}</li>
+                            <li>{% trans "Kommentteja" %}: {{ object.comments.count }}</li>
+
+                            {% if object.organizations.count %}
+                                <li>
+                                    {% trans "Yhteyshenkilönä organisaatioissa" %}:
+                                    <ul class="comma-list list-inline">
+                                        {% for a in admin_in_set.all %}
+                                            <li>
+                                                <a href="{{ a.organization.get_absolute_url }}">{{ a.organization }}
+                                                    {% if not a.organization.is_active or not a.approved %}
+                                                        ({% trans "odottaa ylläpitäjän hyväksyntää" %})
+                                                    {% endif %}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            <li>{% trans "Seuratut aiheet" %}: &nbsp;
+                                {% fav_get_ct_id 'tagging.tag' as ct_id %}
+                                {% include "favorite/favorite_detail.html" with user=object ct_id=ct_id no_edit=True %}
+                            </li>
+                            <li>{% trans "Seuratut organisaatiot" %}: &nbsp;
+                                {% fav_get_ct_id 'organization.organization' as ct_id %}
+                                {% include "favorite/favorite_detail.html" with user=object ct_id=ct_id no_edit=True %}
+                            </li>
+                            <li>{% trans "Seuratut kunnat" %}: &nbsp;
+                                {% fav_get_ct_id 'fimunicipality.municipality' as ct_id %}
+                                {% include "favorite/favorite_detail.html" with user=object ct_id=ct_id no_edit=True %}
+                            </li>
+                        </ul>
+                    {% endblock content_right_part %}
+                </div>
+                <div class="col-md-2">
+
+                </div>
+            </div>
+        {% endblock summary %}
+    </header>
+    {% block subcontent %}{% endblock subcontent %}
+
+{% endblock content %}

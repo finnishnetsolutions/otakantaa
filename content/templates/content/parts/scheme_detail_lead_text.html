@@ -1,0 +1,5 @@
+{% load i18n %}
+
+<p class="unsafe">{{ object.lead_text|linebreaksbr }}</p>
+
+{% include "content/scheme_fragment_edit_link.html" with fragment='lead_text' title=_("Muokkaa tiivistelmää") no_pull=True %}

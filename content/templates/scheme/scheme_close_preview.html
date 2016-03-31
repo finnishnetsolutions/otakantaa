@@ -1,0 +1,37 @@
+{% extends 'otakantaa/base.html' %}
+{% load i18n bootstrap3 %}
+
+{% block content %}
+    <h1>{% trans "Päätä hanke" %}</h1>
+    <p>{% trans "Hanke" %}: <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
+
+    {% if object.participations.surveys.ready_to_close or object.participations.conversations.ready_to_close %}
+        <p>{% trans "Jos päätät hankkeen, myös siihen liittyvät keskustelut ja kyselyt päätetään" %}</p>
+    {% endif %}
+
+    {% if object.participations.surveys.ready_to_close %}
+        <h2 class="h3">{% trans "Päättyvät kyselyt" %}</h2>
+        <ul>
+            {% for s in object.participations.surveys.ready_to_close %}
+                <li><a href="{{ s.get_absolute_url }}">{{ s }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if object.participations.conversations.ready_to_close %}
+        <h2 class="h3">{% trans "Päättyvät keskustelut" %}</h2>
+        <ul>
+            {% for c in object.participations.conversations.ready_to_close %}
+                <li><a href="{{ c.get_absolute_url }}">{{ c }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+
+        <button type="submit" class="btn btn-primary">{% trans "Päätä hanke" %}</button>
+        <a href="{% url 'content:scheme_detail' object.pk %}" class="btn btn-default">{% trans "Peruuta" %}</a>
+    </form>
+{% endblock content %}

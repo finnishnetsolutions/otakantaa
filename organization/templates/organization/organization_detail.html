@@ -1,0 +1,110 @@
+{% extends 'otakantaa/base.html' %}
+{% load i18n fontawesome staticfiles favorites otakantaa_tags cache %}
+
+{% block meta_extra %}
+    {% include 'otakantaa/meta_og_tags.html' with title=object.name description=object.description_plaintext picture_url=object|og_pic_url %}
+{% endblock meta_extra %}
+
+{% block title %}{% trans "Organisaatio" %}: {{ object }} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    {% if not object.is_active %}
+        <div class="alert alert-info">
+            {% if object.awaits_activation %}
+                {% trans "Odottaa ylläpitäjän hyväksyntää." %}
+            {% else %}
+                {% trans "Organisaatio on piilotettu." %}
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="ajaxy-wrap pull-left">{% fav_link object %}</div>
+    {% if object.is_active %}
+        <div class="pull-left margin-left-2">{% include 'otakantaa/share_link.html' %}</div>
+    {% endif %}
+    <div class="clearfix"></div>
+    <div class="simple-well well detail-page-header organization-detail">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 organization-detail-pic-wrap">
+                <div class="editable-wrap ajaxy-wrap organization-picture">
+                    {% include "organization/organization_detail_picture.html" %}
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-6">
+                <div class="editable-wrap ajaxy-wrap">
+                    {% include "organization/organization_detail_name.html" %}
+                </div>
+
+                <div class="editable-wrap ajaxy-wrap">
+                    {% include "organization/organization_detail_type.html" %}
+                </div>
+
+                <ul class="stats">
+                    <li>{% trans "Hankkeita" %}: {{ schemes.count }}</li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 col-sm-6 organization-detail-buttons">
+
+                {% if object in perm.organization.CanEditOrganization and not object.awaits_activation or user.is_moderator %}
+                    <div class="dropdown organization-tools-wrap pull-right">
+                        <button class="btn btn-default btn-lg dropdown-toggle" type="button" id="organization-tools" data-toggle="dropdown" aria-expanded="true">
+                            <span class="glyphicon glyphicon-cog"></span>
+                            {% trans "Työkalut" %}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="organization-tools">
+                            {% if object.is_active %}
+                                <li role="presentation">
+                                    <a role="menuitem" href="{% url 'organization:deactivate' object.pk %}" class="ajaxy-link" data-ajaxy-method="post">
+                                        {% trans "Piilota" %}
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li role="presentation">
+                                    <a role="menuitem" href="{% url 'organization:activate' object.pk %}" class="ajaxy-link" data-ajaxy-method="post">
+                                        {% trans "Aktivoi" %}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li role="separator" class="divider"></li>
+                            <li role="presentation">
+                                <a role="menuitem" href="{% url 'organization:twitter_username_form' object.pk %}" class="ajaxy-link" data-toggle="ajaxy-modal">
+                                    {% trans "Twitter-syöte" %}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="editable-wrap ajaxy-wrap margin-top-1">
+            {% include "organization/organization_detail_description.html" %}
+        </div>
+
+        {% if object in perm.organization.CanEditOrganization %}
+            <hr />
+
+            <h2>{% trans "Yhteyshenkilöt" %}</h2>
+            <div class="editable-wrap ajaxy-wrap">
+                {% include "organization/organization_detail_admins.html" %}
+            </div>
+        {% endif %}
+        <div class="clearfix"></div>
+    </div>
+
+    {% if schemes.count %}
+        <h3>{% trans "Organisaation hankkeet" %}</h3>
+    {% endif %}
+
+    {% include "scheme/scheme_list.html" with object_list=schemes %}
+    {% if organization.twitter_username %}
+        <h3>Twitter <img class="twitter-logo" src="{% static 'otakantaa/img/Twitter_logo.png' %}"></h3>
+        {% get_current_language as LANGUAGE_CODE %}
+        {% cache 3600 organization_tweets organization.pk LANGUAGE_CODE %}
+            {% include "otakantaa/twitter_feed.html" with twitter_username=organization.twitter_username %}
+        {% endcache %}
+    {% endif %}
+{% endblock %}

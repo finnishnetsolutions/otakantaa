@@ -1,0 +1,73 @@
+{% extends 'account/profile_base.html' %}
+
+{% load i18n staticfiles %}
+
+{% block js_extra %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'account/js/messages.js' %}"></script>
+{% endblock %}
+
+
+{% block summary %}{% endblock summary %}
+
+{% block subcontent %}
+    <a name="msg-content"></a>
+    <div class="well margin-top-2">
+        <header>
+            <h2>{% trans "Viestit" %}</h2>
+            <a href="{% url 'account:create_message' object.pk %}#msg-content" class="btn btn-primary btn-lg new-message-btn">{% trans "Uusi viesti" %}</a>
+        </header>
+        <hr style="margin-top: 30px" />
+
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-md-4">
+                <label for="messages-choice">{% trans "Näytä" %}:</label>
+
+                {% comment %}
+                <select name="nayta" id="messages-choice" class=" form-control">
+                    <option value="saapuneet">{% trans "Saapuneet" %}</option>
+                    <option value="lahetetyt">{% trans "Lähetetyt" %}</option>
+                </select>
+                {% endcomment %}
+
+                <div class="btn-group" data-toggle="buttons">
+                  <label class="btn btn-default active">
+                    <input type="radio" name="messages-choice" value="saapuneet" autocomplete="off" checked> {% trans "Saapuneet" %}
+                  </label>
+                  <label class="btn btn-default">
+                    <input type="radio" name="messages-choice" value="lahetetyt" autocomplete="off"> {% trans "Lähetetyt" %}
+                  </label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <br>
+                <div id="messages-ajax-loading" style="display:none;"><img src="{% static 'otakantaa/img/ajax-loader.gif' %}" alt=""></div>
+            </div>
+            <div class="col-md-4">
+                <label for="messages-sorting">{% trans "Järjestys" %}:</label>
+
+                {% comment %}
+                <select name="jarjestys" id="messages-sorting" class="form-control">
+                    <option value="uusin">{% trans "Tuoreimmat ensin" %}</option>
+                    <option value="vanhin">{% trans "Vanhimmat ensin" %}</option>
+                </select>
+                {% endcomment %}
+
+                <div class="btn-group" data-toggle="buttons">
+                  <label class="btn btn-default active">
+                    <input type="radio" name="messages-sorting" value="uusin" autocomplete="off" checked> {% trans "Tuoreimmat ensin" %}
+                  </label>
+                  <label class="btn btn-default">
+                    <input type="radio" name="messages-sorting" value="vanhin" autocomplete="off"> {% trans "Vanhimmat ensin" %}
+                  </label>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'account:messages_table' object.pk %}" id="messages-change-url"></a>
+
+        <div id="messages-table-wrapper">
+            {% include "account/messages/list_table.html" with pager_path=request.path|add:'taulu/' %}
+        </div>
+    </div>
+{% endblock subcontent %}

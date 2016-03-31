@@ -1,0 +1,105 @@
+{% extends 'content/content_base_detail.html' %}
+{% load i18n fontawesome otakantaa_tags %}
+
+{% block content_title %}
+    {% include "content/parts/participation_detail_title.html" with object=request.participation_detail %}
+{% endblock content_title %}
+
+{% block meta_extra %}
+    {% include 'otakantaa/meta_og_tags.html' with title=request.participation_detail.title description=request.participation_detail.description_plaintext picture_url=None|og_pic_url %}
+{% endblock meta_extra %}
+
+{% block content_details %}
+    {% if request.participation_detail.is_open %}
+        {{ request.participation_detail.expires_on_date|timeuntil }} {% trans "jäljellä" %}
+    {% endif %}
+    {% include 'content/content_organization_owners.html' with object=request.participation_detail.scheme %}
+    {% if request.participation_detail.scheme.is_public %}
+        <div class="display-inline margin-left-2">{% include 'otakantaa/share_link.html' %}</div>
+    {% endif %}
+{% endblock content_details %}
+
+{% block content_sidebar_content %}
+    <h3><a href="{{ request.participation_detail.scheme.get_absolute_url }}">{{ request.participation_detail.scheme.title }}</a></h3>
+
+    {% include "participation/participation_list.html" with scheme=request.participation_detail.scheme active=request.participation_detail %}
+{% endblock content_sidebar_content %}
+
+{% block content_header_right_part %}
+    {% if request.participation_detail.scheme.owners.unique_organizations.count == 1 %}
+        {% include 'organization/organization_picture.html' with object=request.participation_detail.scheme.owners.unique_organizations.first %}
+    {% endif %}
+{% endblock content_header_right_part %}
+
+{% block content_precontent %}
+    {% if not request.participation_detail.is_open %}
+        <div class="alert alert-info">
+            {% if request.participation_detail.is_draft %}
+                {{ request.participation_detail.label.draft }}
+
+                {% if request.participation_detail.scheme in perm.content.CanEditScheme %}
+                    <form method="post" action="{% url 'content:participation:open_participation' scheme_id=request.participation_detail.scheme.pk participation_detail_id=request.participation_detail.pk %}" class="display-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-primary">{% trans "Julkaise" %}</button>
+                    </form>
+                {% endif %}
+
+            {% elif request.participation_detail.is_expired %}
+                {{ request.participation_detail.label.expired }}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock content_precontent %}
+
+{% block content_sidebar_tools_menu %}
+    {% if request.participation_detail.scheme in perm.content.CanEditScheme and not request.participation_detail.is_expired or request.participation_detail in perm.content.CanDeleteParticipation %}
+        {{ block.super }}
+    {% endif %}
+{% endblock content_sidebar_tools_menu %}
+
+{% block content_sidebar_tools_menu_items %}
+    {% if request.participation_detail.status == request.participation_detail.STATUS_DRAFT %}
+        {# <li><a class="ajaxy-link" data-ajaxy-method="post" href="{% url 'content:participation:open_participation' scheme_id=request.participation_detail.scheme.pk participation_detail_id=request.participation_detail.pk %}" class="inline-block">{{ request.participation_detail.label.open_it }}</a></li>#}
+    {% elif not request.participation_detail.is_expired %}
+        <li>
+            <form id="close-participation-form" method="post" action="{% url 'content:participation:close_participation' scheme_id=request.participation_detail.scheme.pk participation_detail_id=request.participation_detail.pk %}">
+                {% csrf_token %}
+            </form>
+            <a href="#" id="close-participation-form-submitter">{{ request.participation_detail.label.close_it }}</a>
+        </li>
+    {% endif %}
+
+    {% if request.participation_detail in perm.content.CanDeleteParticipation %}
+        <li><a href="{% url 'content:participation:delete_participation' scheme_id=request.participation_detail.scheme.pk participation_detail_id=request.participation_detail.pk %}">{{ request.participation_detail.label.delete_it }}</a></li>
+    {% endif %}
+{% endblock content_sidebar_tools_menu_items %}
+
+{% block content_maincontent %}
+    <div class="content-description ajaxy-wrap editable-wrap">
+        {% include "content/parts/participation_detail_description.html" with object=request.participation_detail %}
+    </div>
+    <div class="clearfix"></div>
+    {{ block.super }}
+{% endblock content_maincontent %}
+
+{% block content_maincontent_basics %}
+    {% if not request.participation_detail.is_expired %}
+        <p><strong>{{ request.participation_detail.get_status_display }}: </strong>{{ request.participation_detail.status_date }}</p>
+    {% endif %}
+    <div class="ajaxy-wrap">{% include 'content/parts/participation_detail_expiration_date.html' with object=request.participation_detail %}</div>
+{% endblock content_maincontent_basics %}
+
+{% block content_maincontent_attachments %}
+    {% include 'content/attachments.html' with object=request.participation_detail %}
+{% endblock content_maincontent_attachments %}
+
+{% block js_extra %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(function() {
+            $('#close-participation-form-submitter').on('click', function() {
+                $('#close-participation-form').submit();
+            });
+        });
+    </script>
+{% endblock js_extra %}

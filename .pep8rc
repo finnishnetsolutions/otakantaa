@@ -1,0 +1,4 @@
+[pep8]
+ignore = E128
+exclude = .svn,CVS,.bzr,.hg,.git,__pycache__,migrations
+max-line-length = 90

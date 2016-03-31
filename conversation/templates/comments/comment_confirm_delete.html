@@ -1,0 +1,24 @@
+{% extends 'otakantaa/inline_edit_base_form.html' %}
+{% load i18n static %}
+
+{% block before_form %}
+    <div class="well remove-comment-block">
+        <h3>{% trans "Kommentin poisto" %}</h3>
+        <p>{% trans "Poistetaanko kommentti varmasti?" %}</p>
+{% endblock before_form %}
+
+{% block form_actions %}
+    <input type="submit" class="btn btn-primary" value="{% trans "Poista" %}" />
+    <button class="btn btn-default cancel-remove-comment" title="{% trans "Peruuta poistaminen" %}">{% trans "Peruuta" %}</button>
+{% endblock form_actions %}
+
+{% block after_form %}
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            $('.cancel-remove-comment').on('click', function() {
+                $('.remove-comment-block').remove();
+            });
+        });
+    </script>
+{% endblock after_form %}

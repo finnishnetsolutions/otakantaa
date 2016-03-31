@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with obj_url=object.get_absolute_url scheme_url=scheme.get_absolute_url %}<a href="{{obj_url}}">{{ obj }}</a> kieltäytyi kutsusta hankkeen <a href="{{ scheme_url }}">{{ scheme }}</a> omistajaksi.{% endblocktrans %}

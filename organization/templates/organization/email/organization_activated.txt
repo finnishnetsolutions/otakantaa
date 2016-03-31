@@ -1,0 +1,4 @@
+{% extends "otakantaa/email/base.txt" %}{% load i18n configs %}{% block content %}{% blocktrans %}Organisaatio {{ organization }} on aktivoitu ylläpitäjän toimesta.{% endblocktrans %}
+
+{% trans "Katso organisaation tiedot." %}
+{% base_url as url %}{{ url }}{{ organization.get_absolute_url }} {% endblock content %}

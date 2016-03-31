@@ -1,0 +1,66 @@
+{% extends "account/profile_base.html" %}
+{% load i18n bootstrap3 fontawesome staticfiles favorites %}
+
+{% block js_extra %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'account/js/notification_options.js' %}"></script>
+{% endblock %}
+
+{% block profile_pic %}
+    <div class="ajaxy-wrap">
+        {% include "account/user_settings_picture.html" %}
+    </div>
+{% endblock profile_pic %}
+
+{% block content_right_part %}
+    <h2 class="h3">{% trans "Seuratut aiheet" %}</h2>
+    <div class="ajaxy-wrap">
+        {% fav_get_ct_id 'tagging.tag' as ct_id %}
+        {% include "favorite/favorite_detail.html" with user=object ct_id=ct_id title=_("Seuraa aiheita") %}
+    </div>
+    <h2 class="h3">{% trans "Seuratut organisaatiot" %}</h2>
+    <div class="ajaxy-wrap">
+        {% fav_get_ct_id 'organization.organization' as ct_id %}
+        {% include "favorite/favorite_detail.html" with user=object ct_id=ct_id title=_("Seuraa organisaatioita") %}
+    </div>
+    <h2 class="h3">{% trans "Seuratut kunnat" %}</h2>
+    <div class="ajaxy-wrap">
+        {% fav_get_ct_id 'fimunicipality.municipality' as ct_id %}
+        {% include "favorite/favorite_detail.html" with user=object ct_id=ct_id title=_("Seuraa kuntia") %}
+    </div>
+{% endblock content_right_part %}
+
+
+{% block subcontent %}
+    <div class="user-details margin-top-1">
+        <div class="ajaxy-wrap editable-wrap">
+            {% include "account/user_settings_detail.html" %}
+        </div>
+
+        <hr>
+        <div class="ajaxy-wrap editable-wrap">
+            {% include 'account/notification_options/options_detail.html' %}
+        </div>
+
+        <hr>
+        <h2 class="h3">{% trans "Tiliasetukset" %}</h2>
+
+        {% if not object.facebook_associated %}
+            <a class="btn btn-default" href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}&action=associate">
+                {% trans "Yhdistä Facebook-tiliin" %}
+            </a>
+        {% else %}
+            <form action="{% url 'social:disconnect' 'facebook' %}?next={{ request.path }}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-default">{% trans "Poista Facebook-tilin yhdistys" %}</button>
+            </form>
+        {% endif %}
+
+        {% if object.status != object.STATUS_ARCHIVED and user in perm.account.CanEditUser %}
+            <form action="{% url 'account:close' object.pk %}" method="post" style="display:inline-block; width:100%; margin-top:10px;" onsubmit="return confirm('{% trans 'Haluatko varmasti sulkea käyttäjätilisi?' %}');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-default">{% trans "Sulje tili" %}</button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock subcontent %}

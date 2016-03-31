@@ -1,0 +1,5 @@
+{% load i18n bleach_tags %}
+
+{% with comment=object %}
+    {% include 'comments/comment_item_moderation.html' with comment=comment %}
+{% endwith %}

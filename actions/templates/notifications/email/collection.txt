@@ -1,0 +1,17 @@
+{% extends 'notifications/email/base.txt' %}{% load i18n configs %}{% block content %}{% base_url as base_url %}{% if notifications.Comment_content_owner_created_ %}- {% trans "Uusia kommentteja hankkeissasi" %} -{% for obj in notifications.Comment_content_owner_created_ %}
+{{ obj.action.content_object.conversation.get_parent_scheme }}
+{{ obj.action.content_object.created|date:"SHORT_DATETIME_FORMAT" }} : {{obj.action.content_object}}
+{% trans base_url %}{{ obj.action.content_object.get_absolute_url }}
+
+{% endfor %}
+{% endif %}{% if notifications.Comment_content_follower_created_ %}- {% trans "Uusia kommentteja seuraamissasi hankkeissa" %} -
+{% for obj in notifications.Comment_content_follower_created_ %}{{ obj.action.content_object.conversation.get_parent_scheme }}
+{{ obj.action.content_object.created|date:"SHORT_DATETIME_FORMAT" }} : {{obj.action.content_object}}
+{% trans base_url %}{{ obj.action.content_object.get_absolute_url }}
+
+{% endfor %}
+{% endif %}{% if notifications.Delivery_content_owner_created_ %}- {% trans "Saapuneet viestit" %} -
+{{ notifications.Delivery_content_owner_created__count }} {% trans "kappaletta" %}
+{% trans base_url %}{% url 'account:messages' user.pk %}
+{% endif %}{% endblock content %}
+{% block link %}{% base_url as base_url %}{% trans base_url %} {% endblock link %}

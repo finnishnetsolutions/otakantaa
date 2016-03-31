@@ -1,0 +1,39 @@
+{% load i18n staticfiles bootstrap3 %}
+
+<main class="widget">
+    <header class="widget-header">
+        <a href="{% url 'schemes' %}">
+            <img src="{% static 'otakantaa/img/logo_s_'|add:request.LANGUAGE_CODE|add:'.png' %}" alt="{% trans "Otakantaa.fi" %}-{% trans "logo" %}">
+        </a>
+    </header>
+
+    {% for field, errors in form.errors.iteritems %}
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                {{ field }}
+            </div>
+            <ul class="list-group">
+                {% for error in errors %}
+                    <li class="list-group-item">{{ error }}</li>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+    {% block widget_results %}
+    {% endblock widget_results %}
+
+    {% if not object_list %}
+        <div class="widget-no-results">
+            <i>{% block widget_no_results %}{% trans "Ei tuloksia." %}{% endblock widget_no_results %}</i>
+        </div>
+    {% endif %}
+
+    {% block widget_footer %}
+        <footer>
+            <a href="{% url 'schemes' %}?{{request.GET.urlencode}}" class="btn btn-default btn-green" target="_blank">
+                {% trans "Näytä kaikki" %}
+            </a>
+        </footer>
+    {% endblock widget_footer %}
+</main>

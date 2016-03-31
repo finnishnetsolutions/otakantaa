@@ -1,0 +1,16 @@
+{% load i18n bootstrap3 permitter %}
+
+{% permitted perm.favorite.CanFollow obj=obj as can_follow %}
+{% spaceless %}
+    <a href="{% url 'favorite:add_or_remove' content_type_id=ct.pk object_id=obj.pk %}"
+       title="{% if can_follow %} {% trans "Seuraa" %} {% else %} {% trans "Lopeta seuraaminen" %} {% endif %}"
+       data-ajaxy-method="POST"
+       class="ajaxy-link">
+
+        {% if can_follow %}
+            <i class="fa fa-star-o"></i> {% trans "Seuraa" %}
+        {% else %}
+            <i class="fa fa-star"></i> {% trans "Lopeta seuraaminen" %}
+        {% endif %}
+    </a>
+{% endspaceless %}

@@ -1,0 +1,13 @@
+{% load scheme_tags %}
+
+{% scheme_owner_organization scheme as organization %}
+
+{% if scheme.written_as_organization %}
+    {% for organization in scheme.owners.unique_organizations.all %}
+        <a href="{{ organization.get_absolute_url }}">{{ organization }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+{% else %}
+    {% for owner in scheme.owners.all %}
+        <a href="{% url 'account:profile' owner.pk %}" target="_blank">{{ owner }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+{% endif %}

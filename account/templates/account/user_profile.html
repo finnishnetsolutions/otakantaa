@@ -1,0 +1,12 @@
+{% extends 'account/profile_base.html' %}
+
+{% load i18n static %}
+
+{% block subcontent %}
+
+    <h2>{% trans "Omat hankkeet ja osallistumiset" %}</h2>
+
+    <div class="ajaxy-wrap">
+        {% include 'account/user_profile_scheme_list.html' with obj_list=schemes %}
+    </div>
+{% endblock subcontent %}

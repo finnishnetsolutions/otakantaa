@@ -1,0 +1,8 @@
+{% extends 'otakantaa/base.html' %}
+{% load i18n bootstrap3 %}
+
+{% block content %}
+    <h1>{% trans "Kiitos rekisteröitymisestä" %}</h1>
+    <p>{% trans "Rekisteröityminen otakantaa.fi-palveluun on valmis." %}</p>
+    <a class="btn btn-primary" href="{% url 'account:profile' object.pk %}">{% trans "Oma sivu" %}</a>
+{% endblock content %}

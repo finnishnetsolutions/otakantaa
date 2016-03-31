@@ -1,0 +1,13 @@
+{% load i18n bootstrap3 %}
+{% csrf_token %}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Sulje" %}</span></button>
+    <br>
+</div>
+<div class="modal-body">
+    Moi
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-default pull-right" data-dismiss="modal">{% trans "Peruuta" %}</button>
+</div>

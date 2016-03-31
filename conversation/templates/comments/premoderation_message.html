@@ -1,0 +1,9 @@
+{% load i18n bootstrap3 %}
+
+{% if request.is_ajax %}{# HACK: dont re-display non-ajax messsages already show on page header #}
+    {% bootstrap_messages %}
+{% endif %}
+
+{% if request.participation_detail.scheme.premoderation %}
+    <div class="alert alert-warning">{% trans "Kommenttien ja vastausten esimoderointi on käytössä. Uudet kommentit ja vastaukset julkaistaan vasta kun palvelun moderaattori on hyväksynyt ne." %}</div>
+{% endif %}

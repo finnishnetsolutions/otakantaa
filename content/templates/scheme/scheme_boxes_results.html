@@ -1,0 +1,28 @@
+{% load i18n scheme_tags %}
+
+<div class="scheme-boxes">
+    {% for object in object_list %}
+        <article class="scheme-box">
+            {% if object.picture %}
+                <a href="{% url 'content:scheme_detail' object.pk %}">
+                    <img src="{{ object.picture_narrow.url }}" class="img-responsive" alt="{{ object.picture_alt_text }}" title="{{ object.picture_alt_text }}">
+                </a>
+            {% endif %}
+            <div class="scheme-box-content">
+                <h3><a href="{% url 'content:scheme_detail' object.pk %}">{{ object.title }}</a></h3>
+                <div class="participation-stats">
+                    {% include 'content/participations_count_container.html' with object=object %}
+                </div>
+                <div class="owner-list">{% include "scheme/scheme_owners.html" with profile_pictures=True %}</div>
+            </div>
+        </article>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_next %}
+    <div class="text-center margin-top-1">
+        <a href="{% load_schemes_url page_obj %}" class="btn btn-default load-schemes-btn">
+            {% trans "Näytä lisää" %}
+        </a>
+    </div>
+{% endif %}

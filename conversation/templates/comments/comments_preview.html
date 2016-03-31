@@ -1,0 +1,34 @@
+{% load i18n fontawesome comments %}
+
+{% if conversation in perm.conversation.CanCommentConversation %}
+    <a class="btn btn-primary" href="#uusi-kommentti">{% fa_icon "comment" alt=_("Puhekupla") %} {% trans "Uusi kommentti" %}</a>
+{% endif %}
+
+{% for comment in conversation.comments.comments.prefetch.all %}
+    {% include 'comments/comment_item.html' %}
+    {% if comment.responses.public.count %}
+        {% url 'conversation:comment_detail' conversation_id=conversation.pk comment_id=comment.pk quote_id=comment.responses.last.pk as link_url %}
+        {% include 'comments/comment_response_item.html' with comment=comment.responses.public.last response_link=link_url|add:"#uusi-kommentti" %}
+    {% endif %}
+    {% if comment.responses.public.count >= 2 %}
+        <a href="{% url 'conversation:comment_detail' conversation_id=conversation.pk comment_id=comment.pk %}">{% trans "Näytä lisää vastauksia" %}</a>
+    {% endif %}
+    {% if not forloop.last %}
+        <hr>
+    {% endif %}
+{% endfor %}
+
+<div class="margin-top-2 clearfix"></div>
+
+<hr>
+
+{% if conversation in perm.conversation.CanCommentConversation %}
+    {% get_comment_form 'form' %}
+    {% include 'comments/comment_form.html' %}
+{% endif %}
+
+<script type="text/javascript">
+    $(function() {
+        $('blockquote').expander();
+    });
+</script>

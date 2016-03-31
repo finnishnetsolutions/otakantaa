@@ -1,0 +1,25 @@
+{% extends "otakantaa/base.html" %}
+
+{% load i18n bootstrap3 %}
+
+{% block title %}{% trans "Hanke" %}: {% trans "Uusi kysely" %} - {{ block.super }}{% endblock title %}
+
+{% block precontent %}
+    {% include 'otakantaa/temp/kommentointi_painike.html' with toiminto='kysely' %}
+{% endblock precontent %}
+
+{% block content %}
+    <article>
+        <h1>{% trans "Uusi kysely" %}</h1>
+
+        <div class="alert alert-info">
+            {% trans "Täytä kyselyn perustiedot. Kiinnitä erityistä huomiota otsikon ja kuvauksen ymmärrettävyyteen. Kuvaukseen voit lisätä myös kuvia ja videoita. Tallennuksen jälkeen voit vielä muokata perustietoja sekä lisätä kysymyksiä." %}
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary">{% trans "Tallenna kysely" %}</button>
+        </form>
+    </article>
+{% endblock content %}

@@ -1,0 +1,89 @@
+{% load i18n staticfiles compress survey_tags bleach_tags comments %}
+
+<html>
+    <head>
+        {% compress css %}
+            <link rel="stylesheet" href="{% static 'otakantaa/scss/otakantaa.scss' %}" type="text/x-scss">
+        {% endcompress %}
+    </head>
+    <body>
+        <main class="scheme-pdf">
+            <h1>{{ scheme.title }}</h1>
+
+            {% if scheme_information %}
+                <p>
+                    <b>{% trans "Julkaistu" %}</b>: {{ scheme.published|date:"SHORT_DATETIME_FORMAT" }}<br>
+                    <b>{% trans "Aloittaja" %}</b>: {{ scheme.creator.get_full_name }} ({{ scheme.creator.get_short_name }})
+                </p>
+                <p><b>{% trans "Yhteenveto" %}:</b></p>
+                <p>{{ scheme.summary|bleach }}</p>
+                <p><b>{% trans "Lisätiedot" %}:</b></p>
+                <p>{{ scheme.description|bleach }}</p>
+            {% endif %}
+
+            {% if conversations %}
+                <h2>{% trans "Keskustelut" %}</h2>
+
+                {% for conversation in conversations %}
+                    <h3>{{ conversation.title }}</h3>
+                    <p>{{ conversation.description|bleach }}</p>
+
+                    {% with comments=conversation.content_object.comments.all|initial|visible %}
+                        {% if comments %}
+                            <h4>{% trans "Kommentit" %}</h4>
+
+                            {% for comment in comments %}
+                                <div class="comment">
+                                    {% include "scheme/scheme_pdf_comment.html" with comment=comment %}
+                                </div>
+                                {% for reply in comment.responses.all|visible %}
+                                    <div class="comment comment-reply">
+                                        {% include "scheme/scheme_pdf_comment.html" with comment=reply %}
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        {% else %}
+                            <i>{% trans "Ei kommentteja" %}</i>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            {% endif %}
+
+            {% if surveys %}
+                <h2>{% trans "Kyselyt" %}</h2>
+
+                {% for survey in surveys %}
+                    <h3>{{ survey.title }}</h3>
+                    <p>{{ survey.description|bleach }}</p>
+
+                    {% for question in survey.content_object.questions %}
+                        <div class="question-title">{{ question.text }}</div>
+                        {% if question.type == question.TYPE_TEXT or question.type == question.TYPE_NUMBER %}
+                            {% if question.answers.all %}
+                                <ul>
+                                    {% for answer in question.answers.all %}
+                                        {% if answer.text %}
+                                            <li>{{ answer.text }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endif %}
+                        {% if question.type == question.TYPE_RADIO or question.type == question.TYPE_CHECKBOX %}
+                            {% with survey_submission_count=question.survey.submissions.all|length %}
+                                {% if survey_submission_count %}
+                                    <ul>
+                                        {% for option in question.options.all %}
+                                            <li>{{ option.text }} {{ option.answers.all|length }}/{{ survey_submission_count }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        </main>
+    </body>
+</html>
+

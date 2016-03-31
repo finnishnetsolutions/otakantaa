@@ -1,0 +1,257 @@
+{% extends 'content/content_base_detail.html' %}
+
+{% load i18n fontawesome favorites otakantaa_tags twitter_tag cache staticfiles participations %}
+
+{% block title %}{% trans "Hanke" %}: {{ object }} - {{ block.super }}{% endblock title %}
+
+{% block meta_extra %}
+    {% include 'otakantaa/meta_og_tags.html' with title=object.title description=object.lead_text picture_url=object|og_pic_url %}
+{% endblock meta_extra %}
+
+{% block precontent %}
+    {% include 'otakantaa/temp/kommentointi_painike.html' with toiminto='hanke' %}
+{% endblock precontent %}
+
+{% block content_title %}
+    {% include "content/parts/scheme_detail_title.html" %}
+{% endblock content_title %}
+
+{% block content_participation_count %}
+    {% include 'content/participations_count_container.html' with object=object %}
+{% endblock content_participation_count %}
+
+{% block content_details %}
+    {{ object.status_date }}
+
+    {% include 'content/content_organization_owners.html' %}
+    {% if request.user.is_authenticated %}
+        <span class="ajaxy-wrap margin-left-2">{% fav_link object %}</span>
+    {% endif %}
+    {% if object.is_public %}
+        <div class="display-inline margin-left-2">{% include 'otakantaa/share_link.html' %}</div>
+    {% endif %}
+{% endblock content_details %}
+
+{% block content_header_right_part %}
+    {% if object.owners.unique_organizations.count == 1 %}
+        {% include 'organization/organization_picture.html' with object=object.owners.unique_organizations.first %}
+    {% endif %}
+{% endblock content_header_right_part %}
+
+{% block content_sidebar_content %}
+    <h3>{{ object.title }}</h3>
+
+    {% include "participation/participation_list.html" with scheme=object %}
+{% endblock content_sidebar_content %}
+
+{% block content_sidebar_tools %}
+    {% if object in perm.content.CanEditScheme %}
+        <hr>
+        {% if object.participations.exists %}
+            <a href="{% url 'content:participation:create_conversation' scheme_id=object.pk %}" class="btn btn-default btn-block">
+                {% fa_icon "comment" alt=_("Keskustelu") %} {% trans "Lisää keskustelu" %}
+            </a>
+            <a href="{% url 'content:participation:create_survey' scheme_id=object.pk %}" class="btn btn-default btn-block">
+                {% fa_icon "question-circle" alt=_("Kysely") %} {% trans "Lisää kysely" %}
+            </a>
+        {% endif %}
+
+        <div class="btn-group btn-block">
+            <button type="button" class="btn btn-default dropdown-toggle responsive-btn btn-block" id="show-results-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{% trans "Kuka saa ottaa kantaa, vastata kyselyyn ja ottaa osaa keskusteluun?" %}">
+                {% trans "Kuka saa osallistua hankkeeseen?" %} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu ajaxy-wrap">
+                {% include "scheme/scheme_interaction_items.html" %}
+            </ul>
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock content_sidebar_tools %}
+
+{% block content_sidebar_tools_menu %}
+    {% if object in perm.content.CanEditScheme %}
+        {{ block.super }}
+    {% endif %}
+{% endblock content_sidebar_tools_menu %}
+
+{% block content_sidebar_tools_menu_items %}
+    <li>
+        <a href="{% url 'content:twitter_search' scheme_id=object.pk %}" class="ajaxy-link" data-toggle="ajaxy-modal">
+            {% trans "Twitter-syöte" %}
+        </a>
+    </li>
+    <li><a href="{% url 'account:create_message' request.user.pk object.pk %}">{% trans "Lähetä viesti osallistujille" %}</a></li>
+
+    <li role="separator" class="divider"></li>
+    {% if object in perm.content.CanExportScheme %}
+        <li class="dropdown-header">{% trans "Lataa hankkeen tiedot" %}</li>
+        <li{% if object not in perm.content.CanExportSchemePdf %} class="disabled"{% endif %}><a href="{% url 'content:scheme_pdf_export' scheme_id=object.pk %}">{% trans "PDF-muodossa" %}</a></li>
+        <li{% if object not in perm.content.CanExportSchemeExcel %} class="disabled"{% endif %}><a href="{% url 'content:participation_excel_export' scheme_id=object.pk %}">{% trans "Excel-muodossa" %}</a></li>
+        <li{% if object not in perm.content.CanExportSchemeWord %} class="disabled"{% endif %}><a href="{% url 'content:participation_word_export' scheme_id=object.pk %}">{% trans "Word-muodossa" %}</a></li>
+        <li role="separator" class="divider"></li>
+    {% endif %}
+    <li>
+        <a tabindex="-1" href="{% url 'content:toggle_premoderation' scheme_id=object.pk premoderation_state=object.premoderation|yesno:"0,1" %}" class="ajaxy-link" data-ajaxy-method="post" title="{% trans "Jos kommenttien esimoderointi otetaan käyttöön, hankkeeseen lisättävät kommentit julkaistaan vasta kun palvelun moderaattori on hyväksynyt ne." %}">
+            {% if object.premoderation %}{% fa_icon 'check-square-o' alt=_("käytössä") %}{% else %}{% fa_icon 'square-o' alt=_("ei käytössä") %}{% endif %} {% trans "Kommenttien esimoderointi" %}
+        </a>
+    </li>
+    {% if object.status == object.STATUS_DRAFT %}
+        <li><a href="{% url 'content:try_publish' scheme_id=object.pk %}">{% trans "Julkaise hanke" %}</a></li>
+    {% endif %}
+    {% if object in perm.content.CanRevertSchemeToDraft %}
+        <li><a href="{% url 'content:revert_scheme_to_draft' scheme_id=object.pk %}" class="ajaxy-link" data-ajaxy-method="post">{% trans "Muuta luonnokseksi" %}</a></li>
+    {% endif %}
+    {% if object in perm.content.CanCloseScheme %}
+        <li><a href="{% url 'content:try_close' scheme_id=object.pk %}">{% trans "Päätä hanke" %}</a></li>
+    {% endif %}
+    {% if object in perm.content.CanReopenScheme %}
+        <li><a href="{% url 'content:reopen_scheme' scheme_id=object.pk %}" class="ajaxy-link" data-ajaxy-method="post">{% trans "Avaa hanke" %}</a></li>
+    {% endif %}
+    {% if object in perm.content.CanDeleteScheme %}
+        <li><a href="{% url 'content:delete_scheme' scheme_id=object.pk %}">{% trans "Poista hanke" %}</a></li>
+    {% endif %}
+{% endblock content_sidebar_tools_menu_items %}
+
+{% block content_maincontent %}
+    {% if object.status != object.STATUS_PUBLISHED %}
+        <div class="alert alert-info">
+            {% if object.status == object.STATUS_DRAFT and object in perm.content.CanEditScheme %}
+                {% if not object.participations.exists %}
+                    <strong>{% trans "Hanke on luonnostilassa ja voit jatkaa sen muokkausta. Voit lisätä mm. kuvia ja linkittää videoita. Hankkeelle voi lisätä myös otsikkokuvan joka näkyy hakusivulla otsikon yläpuolella." %}</strong>
+                    <p>{% blocktrans %}Hankkeen voi julkaista, kun ensimmäinen kysely tai keskustelu on avattu.{% endblocktrans %}</p>
+                    <div class="margin-top-sm">
+                        <a href="{% url 'content:participation:create_conversation' scheme_id=object.pk %}" type="button" class="btn btn-primary btn-padded">
+                            {% fa_icon "comment" alt=_("Puhekupla") %} <span class="margin-left-sm">{% trans "Lisää keskustelu" %}</span>
+                        </a>
+                        <a href="{% url 'content:participation:create_survey' scheme_id=object.pk %}" type="button" class="btn btn-primary btn-padded">
+                            {% fa_icon "question-circle" alt=_("Kysymysmerkki") %} <span class="margin-left-sm">{% trans "Lisää kysely" %}</span>
+                        </a>
+                    </div>
+                {% else %}
+                    <strong>{% trans "Hanke on luonnostilassa" %}</strong>
+                    <p>{% blocktrans %}Hankkeeseen ei voi osallistua. Viimeistele hankkeen sisältö ja julkaise hanke.{% endblocktrans %}</p>
+                    <a href="{% url 'content:try_publish' scheme_id=object.pk %}" type="button" class="btn btn-primary btn-padded margin-top-sm">
+                        {% trans "Julkaise hanke" %}
+                    </a>
+                {% endif %}
+            {% elif object.status == object.STATUS_CLOSED %}
+                <strong>{% trans "Hanke on päättynyt" %}.</strong>
+                <label for="">{% trans "Yhteenveto" %}:</label>
+                <div class="content-summary ajaxy-wrap editable-wrap">
+                    {% include "content/parts/scheme_detail_summary.html" %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="scheme-picture ajaxy-wrap editable-wrap">
+        {% include "content/parts/scheme_detail_picture.html" %}
+    </div>
+
+    {% if object.picture or object.status == object.STATUS_DRAFT %}
+        <hr>
+    {% endif %}
+
+    <div class="content-lead-text ajaxy-wrap editable-wrap">
+        {% include "content/parts/scheme_detail_lead_text.html" %}
+    </div>
+
+    {% if object.lead_text|length > 0 or object.status == object.STATUS_DRAFT %}
+        <hr>
+    {% endif %}
+
+    {{ block.super }}
+{% endblock content_maincontent %}
+
+{% block content_collapsable_content %}
+    <div class="content-description ajaxy-wrap editable-wrap margin-top-1">
+        {% include "content/parts/scheme_detail_description.html" %}
+    </div>
+    <hr>
+    {{ block.super }}
+{% endblock content_collapsable_content %}
+
+{% block content_maincontent_basics %}
+    <p><strong>{{ object.get_status_display }}: </strong>{{ object.status_date }}</p>
+    <div class="ajaxy-wrap">{% include 'content/parts/scheme_detail_owners.html' %}</div>
+    <div class="ajaxy-wrap">{% include 'content/parts/scheme_detail_tags.html' %}</div>
+    <div class="ajaxy-wrap">{% include 'content/parts/scheme_detail_municipalities.html' %}</div>
+{% endblock content_maincontent_basics %}
+
+{% block content_maincontent_attachments %}
+    {% include 'content/attachments.html' %}
+{% endblock content_maincontent_attachments %}
+
+{% block content_subcontent %}
+    <div class="hidden-xs">
+        {% get_conversations object as conversations_details %}
+        {% if conversations_details %}
+            <h2 class="scheme-content-list-title">{% trans "Tästä puhutaan" %}</h2>
+
+            <ul class="scheme-content-list scheme-content-list-conversation">
+                {% for conversation_details in conversations_details %}
+                    <li class="scheme-content-list-conversation-container">
+                        <div class="scheme-content-list-conversation-icon">
+                            {% fa_icon "comment" alt=_("Keskustelu") %}
+                        </div>
+                        <div class="scheme-content-list-conversation-details">
+                            <div class="scheme-content-list-conversation-title">
+                                <a href="{% url 'content:participation:conversation_detail' scheme_id=conversation_details.scheme_id participation_detail_id=conversation_details.pk %}">
+                                    {{ conversation_details.title }}
+                                </a>
+                                <span class="brand-dark-grey">
+                                    {% if conversation_details.is_open %}
+                                        ({{ conversation_details.expires_on_date|timeuntil }} {% trans "jäljellä" %})
+                                    {% else %}
+                                        ({% trans "päättynyt" %})
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <ul class="scheme-content-list">
+                            {% for comment in conversation_details.content_object.comments.comments|slice:":3" %}
+                                {% include "scheme/scheme_conversation_list_item.html" %}
+                            {% empty %}
+                                <li style="padding-left:70px;">{% trans "Ei kommentteja" %}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if conversation_details.content_object.comments.comments.count > 3 %}
+                            <div class="text-center">
+                                <a href="{% url 'content:participation:conversation_detail' scheme_id=conversation_details.scheme_id participation_detail_id=conversation_details.pk %}#comments">
+                                    {% trans "Näytä lisää" %}
+                                </a>
+                                <span class="brand-dark-grey">({{ conversation_details.content_object.comments.comments.count }})</span>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% get_surveys object as surveys %}
+        {% if surveys %}
+            <h2 class="scheme-content-list-title">{% trans "Vastaa kyselyihin" %}</h2>
+
+            <ul class="scheme-content-list scheme-content-list-survey">
+                {% for survey in surveys|slice:":5" %}
+                    {% include "scheme/scheme_survey_list_item.html" %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    {% if object.twitter_search %}
+        <h2 class="scheme-content-list-title">Twitter <img class="twitter-logo" src="{% static 'otakantaa/img/Twitter_logo.png' %}"></h2>
+        {% get_current_language as LANGUAGE_CODE %}
+        {% cache 3600 scheme_tweets object.pk LANGUAGE_CODE %}
+            {% include "otakantaa/twitter_feed.html" with twitter_search=object.twitter_search %}
+        {% endcache %}
+    {% endif %}
+
+    <div class="text-right margin-top-3">
+        <a href="{% url 'widget:scheme_modal' scheme_id=object.pk %}" class="btn btn-default btn-lg ajaxy-link" data-toggle="ajaxy-modal">
+            <span class="glyphicon glyphicon-cog"></span> {% trans "Widget" %}
+        </a>
+    </div>
+{% endblock content_subcontent %}

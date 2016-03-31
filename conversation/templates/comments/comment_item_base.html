@@ -1,0 +1,58 @@
+{% load i18n fontawesome otakantaa_tags flagging moderation %}
+
+<article class="ajaxy-wrap {% block article_class %}comment{% endblock article_class %}">
+    <a name="kommentti-{{ comment.pk }}"></a>
+
+    {% if comment.is_removed %}
+        {% include 'comments/comment_item_removed.html' %}
+    {% else %}
+        <header>
+            {% if comment.title %}
+                <h3><a href="{{ comment.get_absolute_url }}">{{ comment.title }}</a></h3>
+            {% endif %}
+
+            <div class="pull-left">
+                {% include 'account/profile_picture.html' with class='profile-pic-small' user=comment.user highlight=comment.admin_comment %}
+            </div>
+            <div class="pull-left comment-info">
+                <p><span class="comment-name{% if comment.admin_comment %} username-highlight{% endif %}">{{ comment.name }}</span><br>{{ comment.created }}</p>
+            </div>
+            {% block voting %}
+                <div class="pull-right thumbs ajaxy-wrap">
+                    {% include 'comments/comment_voting.html' %}
+                </div>
+            {% endblock voting %}
+            <div class="clearfix"></div>
+        </header>
+        <div class="comment-content">
+
+            {% block quote %} {% endblock quote %}
+
+            <div id="comment-text-{{ comment.pk }}" class="ajaxy-wrap">{% include 'comments/comment_text.html' %}</div>
+
+            {% block attachments %} {% endblock attachments %}
+            <div id="remove-comment-container-{{ comment.pk }}"></div>
+            <footer>
+                {% block response_link %} {% endblock response_link %}
+                {% block footer_tools %}
+                    <div class="pull-right">
+                        {% if comment in perm.conversation.CanRemoveComment %}
+                            <a href="{% url 'conversation:remove_comment' comment.pk %}" class="ajaxy-link" data-ajaxy-target="#remove-comment-container-{{ comment.pk }}" title="{% trans "Poista kommentti" %}">{% fa_icon "remove" alt=_("Poista") %} {% trans "Poista" %}</a> |
+                        {% endif %}
+                        {% if comment in perm.conversation.CanRemoveComment %}
+                            <a href="{% url 'conversation:edit_comment' comment.pk %}" class="ajaxy-link" data-ajaxy-target="#comment-text-{{ comment.pk }}" title="{% trans "Muokkaa kommenttia" %}">{% fa_icon "edit" alt=_("Muokkaa") %} {% trans "Muokkaa" %}</a> |
+                        {% endif %}
+                        <span>{% if not comment.is_removed %}{% flag_link comment label=_("Ilmianna") %}{% endif %}</span>
+                        {% if request.participation_detail.scheme.is_public %}
+                            |
+                            {% with url=BASE_URL|add:comment.get_absolute_url %}
+                                <div class="display-inline" style="margin-left:2px;">{% include 'otakantaa/share_link.html' with anchor='#kommentti-'|add_to_str:comment.pk|urlencode noicon=True object=comment url=url %}</div>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                {% endblock footer_tools %}
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    {% endif %}
+</article>

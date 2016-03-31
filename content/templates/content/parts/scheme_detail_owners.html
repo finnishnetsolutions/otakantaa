@@ -1,0 +1,40 @@
+{% load fontawesome i18n %}
+
+<strong>{% trans "Omistajat" %}: </strong>
+<ul class="list-inline comma-list">
+    {% if object.written_as_organization %}
+        {% for org in object.owners.unique_organizations.all %}
+            <li class="tag"><a href="{{ org.get_absolute_url }}">{{ org }}</a></li>
+        {% endfor %}
+    {% else %}
+        {% for o in object.owners.real %}
+            <li class="tag"><a href="{{ o.get_absolute_url }}">{{ o }}</a></li>
+        {% endfor %}
+    {% endif %}
+</ul>
+
+{% if object.written_as_organization %}
+    <span style="display:block; margin-top:5px;"></span>
+    <strong>{% trans "Yhteyshenkilöt" %}: </strong>
+    <ul class="list-inline comma-list">
+        {% for user in object.owners.unique_users.all %}
+            <li class="tag"><a href="{{ user.get_absolute_url }}">{{ user.get_short_name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if object in perm.content.CanEditScheme %}
+    {% if object.owners.unapproved.count %}
+        <span style="display:block; margin-top:5px;"></span>
+        <strong>{% trans "Odottaa hyväksyntää" %}: </strong>
+        <ul class="list-inline comma-list">
+            {% for o in object.owners.unapproved.all %}
+                <li class="tag"><a href="{{ o.get_absolute_url }}">{{ o.get_short_name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}
+
+<div class="margin-top-sm">
+    {% include "content/scheme_fragment_edit_link.html" with fragment='owners' title=_("Muokkaa omistajia") no_pull=True %}
+</div>

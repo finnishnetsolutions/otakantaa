@@ -1,0 +1,5 @@
+{% extends 'otakantaa/email/base.txt' %}{% load i18n %}
+{% block content %}{% trans "Vahvista rekisteröitymisesi otakantaa.fi-palveluun alla olevasta linkistä" %}:
+{{ activation_link }}
+
+{% trans "Jos linkkiä napsauttamalla ei tapahdu mitään, kopioi ja liitä osoite selaimen osoiteriville." %}{% endblock content %}

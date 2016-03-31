@@ -1,0 +1,21 @@
+{% load i18n twitter_tag %}
+
+{% if twitter_search %}
+    {% search_tweets for twitter_search as tweets limit 5 %}
+{% elif twitter_username %}
+    {% get_tweets for twitter_username as tweets limit 5 %}
+{% endif %}
+
+{% for tweet in tweets %}
+    <blockquote class="twitter-tweet">
+        <p>{{ tweet.html|safe }}</p>
+        <p>
+            — {{ tweet.user.name }} (@{{ tweet.user.screen_name }})
+            <a href="https://twitter.com/{{ tweet.user.screen_name }}/status/{{ tweet.id }}/">{{ tweet.datetime|date:"SHORT_DATETIME_FORMAT" }}</a>
+        </p>
+    </blockquote>
+{% empty %}
+    <div class="text-center">
+        <i>{% trans "Ei hakutuloksia Twitteristä." %}</i>
+    </div>
+{% endfor %}

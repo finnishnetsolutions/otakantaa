@@ -1,0 +1,5 @@
+{% extends 'notifications/email/base.txt' %}{% load i18n configs %}
+{% block subject %}{% blocktrans %}Seuraamaasi hanketta on kommentoitu{% endblocktrans %}{% endblock subject %}
+
+{% block content %}{% blocktrans with name=object.content_object.conversation.get_parent_scheme %}Seuraamaasi hanketta "{{ name }}" on kommentoitu{% endblocktrans %}{% endblock content %}
+{% block link %}{% trans "Katso" %} {% base_url as base_url %}{% trans base_url %}{{ object.content_object.conversation.get_parent_scheme.get_absolute_url }} {% endblock link %}

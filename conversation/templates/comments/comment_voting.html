@@ -1,0 +1,14 @@
+{% load i18n fontawesome comments %}
+
+{% get_vote_icon comment 'up' %}
+{% get_vote_icon comment 'down' %}
+{% get_voting_disabled_class comment %}
+
+{% if request.user.is_authenticated and comment in perm.conversation.CanCancelVote %}
+    <a href="{% url 'conversation:cancel_vote' comment.pk %}" class="ajaxy-link" data-ajaxy-method="post">{% trans "Peru kannanotto" %}</a>
+{% endif %}
+<div class="btn-group" role="group">
+    <a href="{% url 'conversation:comment_vote_up' comment.pk %}" data-ajaxy-method="post" class="btn btn-default ajaxy-link{{ disabled_class }}">{% fa_icon icon_thumb_up alt=_("Peukku ylös") %} {{ comment.votes.up.count }}</a>
+    <a href="{% url 'conversation:comment_vote_down' comment.pk %}" data-ajaxy-method="post" class="btn btn-default ajaxy-link{{ disabled_class }}">{% fa_icon icon_thumb_down alt=_("Peukku alas") %} {{ comment.votes.down.count }}</a>
+</div>
+<span class="thumbs-counter{% if comment.votes.balance < 0 %} negative{% endif %}">{{ comment.votes.balance }}</span>

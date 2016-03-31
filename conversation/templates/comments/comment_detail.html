@@ -1,0 +1,8 @@
+{% extends 'participation/conversation_detail.html' %}
+{% load i18n %}
+
+{% block content_subcontent %}
+    <div id="comments">
+        {% include 'comments/comment_and_responses_block.html' %}
+    </div>
+{% endblock content_subcontent %}

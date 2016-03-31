@@ -1,0 +1,2 @@
+{% load i18n %}
+<span class="organization-type">{{ object.get_type_display }}{% include "organization/organization_fragment_edit_link.html" with fragment="type" title=_("Muokkaa tyyppiä") %}</span>

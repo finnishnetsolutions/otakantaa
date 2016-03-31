@@ -1,0 +1,12 @@
+{% load i18n fontawesome %}
+<strong>{% spaceless %}
+    {% if object.is_expired %}
+        {% trans "Päättynyt" %}
+    {% else %}
+        {% trans "Päättymispäivä" %}
+    {% endif %}
+{% endspaceless %}: </strong>{{ object.expiration_date|date:"SHORT_DATE_FORMAT" }}
+
+<div class="margin-top-sm">
+    {% include 'content/participation_fragment_edit_link.html' with fragment='expiration_date' title=_("Muokkaa päättymispäivää") no_pull=True %}
+</div>

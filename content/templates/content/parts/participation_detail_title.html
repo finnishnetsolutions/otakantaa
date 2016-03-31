@@ -1,0 +1,6 @@
+{% load fontawesome %}
+
+<h1>{{ object.title }}</h1>
+<div class="margin-top-sm">
+    {% include 'content/participation_fragment_edit_link.html' with fragment='title' title=_("Muokkaa otsikkoa") no_pull=True %}
+</div>

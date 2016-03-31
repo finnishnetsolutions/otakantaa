@@ -1,0 +1,34 @@
+{% extends "scheme/scheme_export_form.html" %}
+
+{% block content_form %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        $(function() {
+            var export_form = $(".export-form");
+            var conversations = export_form.find("input[name=conversation]:radio");
+            var surveys = export_form.find("input[name=survey]:radio");
+            var conversation_selected = _.some(conversations, function(conversation) { return $(conversation).prop("checked"); })
+            var survey_selected = _.some(surveys, function(survey) { return $(survey).prop("checked"); })
+
+            if (conversations.length && surveys.length) {
+                conversations.click(function() {
+                    surveys.prop("checked", false);
+                });
+                surveys.click(function() {
+                    conversations.prop("checked", false);
+                });
+
+                if ( ! conversation_selected && ! survey_selected) {
+                    conversations.first().prop("checked", true);
+                }
+            }
+            else if (conversations.length && ! conversation_selected) {
+                conversations.first().prop("checked", true);
+            }
+            else if (surveys.length && ! survey_selected) {
+                surveys.first().prop("checked", true);
+            }
+        });
+    </script>
+{% endblock content_form %}

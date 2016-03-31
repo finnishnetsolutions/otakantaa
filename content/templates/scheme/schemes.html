@@ -1,0 +1,101 @@
+{% extends 'otakantaa/base.html' %}
+
+{% load i18n staticfiles bootstrap3 otakantaa_tags widget_tags %}
+
+{% block precontent %}
+    {% include 'otakantaa/temp/kommentointi_painike.html' with toiminto='etusivu' %}
+
+    <a name="search"></a>
+    <form id="scheme-search-form" class="form" data-extended-search="{{ extended_search|default:0 }}">
+        <div class="container-fluid otakantaa-main-jumbotron">
+            <header class="main-header text-center">
+                <h1>{% trans "Osallistu keskusteluun. Vaikuta valmisteluun." %}</h1>
+                <h2 class="h3">{% trans "Otakantaa.fi-palvelusta löydät ajankohtaiset hankkeet, joihin kaivataan mielipidettäsi." %}</h2>
+            </header>
+
+            <div class="container form-components">
+                <div class="row scheme-search-text">
+                    <div class="col-md-offset-3 col-md-6 col-sm-offset-2 col-sm-8 compact-search-component">
+                        {% render_template_to_variable scheme_search_button="scheme/scheme_search_button.html" %}
+                        <span class="sr-only">{% trans "Hae hankkeita" %}</span>
+                        {% bootstrap_field form.text_with_button button_addon_after=scheme_search_button size="large" bound_css_class="''" %}
+                    </div>
+                    <div class="col-md-offset-3 col-md-6 extended-search-component">
+                        <span class="sr-only">{% trans "Hae hankkeita" %}</span>
+                        {% bootstrap_field form.text size="large" bound_css_class="''" %}
+                    </div>
+                </div>
+
+                <!-- Extended search options -->
+                <div class="extended-search-components">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% bootstrap_field form.municipality bound_css_class="''" %}
+                        </div>
+                        <div class="col-md-4">
+                            {% bootstrap_field form.tags bound_css_class="''" %}
+                        </div>
+                        <div class="col-md-4">
+                            {% bootstrap_field form.organization bound_css_class="''" %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6">
+                            {% bootstrap_field form.status %}
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            {% bootstrap_field form.participations %}
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            {% bootstrap_field form.owner_type %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-offset-4 col-md-4 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg scheme-search-btn">
+                                <span class="glyphicon glyphicon-search"></span> {% trans "Hae" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row extended-search-component">
+                    <div class="col-md-4 col-md-offset-4">
+                        <p class="text-center hide-extended-form-wrap">
+                            <a id="hide-extended-search-form" href="#">{% trans "Piilota lisähakuehdot" %}</a>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <a target="_blank" href="{{ rss_url|add:"?"|add:request.GET.urlencode }}" class="btn btn-default">RSS</a>
+                        <a href="{% url 'widget:scheme_list_modal' %}?{{request.GET.urlencode}}" class="btn btn-default ajaxy-link" data-toggle="ajaxy-modal">
+                            <span class="glyphicon glyphicon-cog"></span> {% trans "Widget" %}
+                        </a>
+                    </div>
+                </div>
+
+                <p class="text-center compact-search-component">
+                    <a id="show-extended-search-form" href="#">{% trans "Näytä lisähakuehdot" %}</a>
+                </p>
+
+                <div class="hidden">
+                    {% bootstrap_field form.extended_search %}
+                </div>
+            </div>
+        </div>
+
+        <div class="scheme-result-count">{% blocktrans with results=object_list|length %}Hakuehdoilla löytyi {{ results }} hanketta.{% endblocktrans %}</div>
+
+        <div class="scheme-listing-buttons container form-inline">
+            {% bootstrap_field form.sorting %}
+            <div class="margin-left-2 display-inline">
+                {% bootstrap_field form.display_type %}
+            </div>
+        </div>
+    </form>
+{% endblock precontent %}
+
+{% block content %}
+    {% include schemes_display_template|default:"scheme/scheme_boxes.html" %}
+
+    <script type="text/javascript" src="{% static 'scheme/js/schemes.js' %}"></script>
+{% endblock content %}

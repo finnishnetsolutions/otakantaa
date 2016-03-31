@@ -1,0 +1,18 @@
+{% load i18n bootstrap3 %}
+
+<form action="{{ request.path }}" method="post">
+    <div class="modal-header">
+        <h2>{% trans "Twitter-syöte" %}</h2>
+    </div>
+    <div class="modal-body">
+        <p>{% trans "Anna hakusana jolla hakea hankkeen Twitter-syötteen tuloksia." %} {% trans "Twitter-syöte tulee näkyviin hankkeen loppuosaan." %}</p>
+        <p>{% trans "Päivittymisessä voi kestää jonkin aikaa." %}
+
+        {% csrf_token %}
+        {% bootstrap_form form %}
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">{% trans "Tallenna" %}</button>
+        <button class="btn btn-default" data-dismiss="modal">{% trans "Peruuta" %}</button>
+    </div>
+</form>

@@ -1,0 +1,21 @@
+{% extends 'otakantaa/base.html' %}
+
+{% load i18n bootstrap3 %}
+
+{% block content %}
+    <div class="well">
+        <h2 style="margin-bottom: 30px;">Palaute</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {% if request.user.is_authenticated %}
+                <div style="margin-bottom: 10px">
+                    <label style="display:block">Lähettäjä</label>
+                    <a href="{% url 'account:profile' user.pk %}">{{ user.get_full_name }}</a>
+                </div>
+            {% endif %}
+            {% bootstrap_form form %}
+            <button class="btn btn-primary btn-lg">{% trans "Lähetä" %}</button>
+        </form>
+    </div>
+{% endblock %}

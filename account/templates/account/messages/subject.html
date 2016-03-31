@@ -1,0 +1,17 @@
+{% load i18n %}
+
+{% spaceless %}
+    {% if not no_link %}
+        <a href="{% url 'account:show_message' object.pk message.pk %}#msg-content">
+    {% endif %}
+
+    {% if object not in message.read_by_users and highlight_unread %}
+        <b>{{ message.subject }}</b>
+    {% else %}
+        {{ message.subject }}
+    {% endif %}
+
+    {% if link %}
+        </a>
+    {% endif %}
+{% endspaceless %}

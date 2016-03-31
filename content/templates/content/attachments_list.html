@@ -1,0 +1,39 @@
+{% load i18n attachments fontawesome %}
+
+<ul class="attachment-list">
+{% for attachment in object.attachments.all %}
+    <li class="ajaxy-wrap">
+        <a href="{{ attachment.file.url }}">{{ attachment.original_name }}</a>
+        {% get_attachments_delete_url object attachment 'delete_url' %}
+        {% if delete_url %}
+            <a title="{% trans "Poista liitetiedosto" %}" href="{{ delete_url }}" class="ajaxy-link remove-attachment" data-ajaxy-method="post" data-ajaxy-remove-triggerer-wrap="yes">{% fa_icon "remove" alt=_("Poista liitetiedosto") %}</a>
+        {% endif %}
+    </li>
+    {% empty %}
+        <li>{% trans "Ei liitteitä" %}</li>
+{% endfor %}
+</ul>
+
+{% if object|get_class_name == 'Scheme' and object in perm.content.CanEditScheme %}
+    {% url 'content:add_attachments' scheme_id=object.pk as add_url %}
+{% elif object|get_class_name == 'ParticipationDetails' and object in perm.content.CanEditParticipation %}
+    {% url 'content:participation:add_attachments' scheme_id=object.scheme.pk participation_detail_id=object.pk as add_url %}
+{% endif %}
+
+{% get_attachments_edit_url object 'add_url' %}
+{% if add_url %}
+    <a class="btn btn-default ajaxy-link" href="{{ add_url }}" data-ajaxy-target="#attachment-form-wrap" data-ajaxy-remove-triggerer="yes">{% trans "Lisää liite" %}</a>
+{% endif %}
+
+<div id="attachment-form-wrap"></div>
+
+<script type="text/javascript">
+    $(function() {
+        $('.remove-attachment').on('click', function() {
+            if (confirm('{% trans "Poistetaanko liitetiedosto?" %}')) {
+                return true;
+            }
+            return false;
+        });
+    });
+</script>

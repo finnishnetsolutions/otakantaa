@@ -1,0 +1,21 @@
+{% extends "widget/widget_content_base.html" %}
+
+{% load i18n %}
+
+{% block widget_results %}
+    {% for scheme in object_list %}
+        <div class="widget-item">
+            <div class="widget-item-title">
+                <a href="{% url 'content:scheme_detail' scheme.pk %}" target="_blank">
+                    {{ scheme.title }}
+                </a>
+            </div>
+            <div class="info-text">
+                {% include "widget/widget_scheme_owners.html" %} |
+                {{ scheme.published|date:"d.m.Y" }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock widget_results %}
+
+{% block widget_no_results %}{% trans "Hankkeita ei löytynyt." %}{% endblock widget_no_results %}

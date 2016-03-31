@@ -1,0 +1,9 @@
+{% load i18n bootstrap3 fontawesome %}
+
+{% for key, value in show_results_choices %}
+    <li>
+        <a href="{% url 'content:participation:survey_set_show_results' scheme_id=object.scheme_id participation_detail_id=object.pk value=key %}" class="ajaxy-link" data-ajaxy-method="post">
+            {% if survey.show_results == key %}<i class="fa fa-check fa-fw"></i>{% else %}<i class="fa fa-fw"></i>{% endif %} {{ value }}
+        </a>
+    </li>
+{% endfor %}

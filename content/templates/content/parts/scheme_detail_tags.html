@@ -1,0 +1,12 @@
+{% load fontawesome i18n %}
+
+<strong>{% trans "Aiheet" %}: </strong>
+<ul class="list-inline comma-list">
+    {% for t in object.tags.all %}
+        <li class="tag">{{ t }}</li>
+    {% endfor %}
+</ul>
+
+<div class="margin-top-sm">
+    {% include "content/scheme_fragment_edit_link.html" with fragment='tags' title=_("Muokkaa aiheita") no_pull=True %}
+</div>

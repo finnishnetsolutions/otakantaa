@@ -1,0 +1,3 @@
+{% extends "otakantaa/email/base.txt" %}{% load i18n %}{% block content %}{% blocktrans %}Hei {{ user }},
+
+Tervetuloa otakantaa.fi-palvelun käyttäjäksi.{% endblocktrans %}{% endblock content %}

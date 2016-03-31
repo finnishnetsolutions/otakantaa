@@ -1,0 +1,3 @@
+{% load i18n %}{% blocktrans with scheme_url=scheme.get_absolute_url %}Sinut on kutsuttu hankkeen <a href="{{ scheme_url }}">{{ scheme }}</a> omistajaksi.{% endblocktrans %}
+
+<a href="{{ invitation_url }}">{% trans "Hyväksy/hylkää kutsu tästä linkistä" %}</a>

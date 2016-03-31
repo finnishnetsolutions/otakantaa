@@ -1,0 +1,35 @@
+{% extends 'otakantaa/base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h1>{% trans "Julkaiseminen" %}</h1>
+
+    <p>{% trans "Julkaise hanke ja siihen liittyvät keskustelut ja kyselyt." %}</p>
+
+    <p><strong>{% trans "Julkaistava hanke" %}:</strong> <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
+
+    {% if object.participations.surveys.ready_to_publish %}
+        <strong>{% trans "Julkaistavat kyselyt" %}</strong>
+        <ul>
+            {% for s in object.participations.surveys.ready_to_publish %}
+                <li><a href="{{ s.get_absolute_url }}">{{ s }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if object.participations.conversations.ready_to_publish %}
+        <strong>{% trans "Julkaistavat keskustelut" %}</strong>
+        <ul>
+            {% for c in object.participations.conversations.ready_to_publish %}
+                <li><a href="{{ c.get_absolute_url }}">{{ c }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post" action="{% url 'content:publish_scheme' object.pk %}" class="display-inline">
+        {% csrf_token %}
+        <button class="btn btn-primary">{% trans "Julkaise" %}</button>
+    </form>
+
+    <a href="{% url 'content:scheme_detail' object.pk %}" class="btn btn-default">{% trans "Peruuta" %}</a>
+{% endblock content %}

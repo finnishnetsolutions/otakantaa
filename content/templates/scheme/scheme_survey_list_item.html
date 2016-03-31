@@ -1,0 +1,25 @@
+{% load i18n staticfiles fontawesome %}
+
+<li class="scheme-content-list-item">
+    <div class="scheme-content-list-item-picture">
+        {% fa_icon "question-circle" alt=_("Kysely") %}
+    </div>
+    <div class="scheme-content-list-item-content">
+        <div class="scheme-content-list-item-title">
+            <a href="{% url 'content:participation:survey_detail' scheme_id=survey.scheme_id participation_detail_id=survey.pk %}">
+                {{ survey.title|truncatechars:100 }}
+            </a>
+            <span class="brand-dark-grey">
+                {% if not survey.is_open %}
+                    ({% trans "päättynyt" %})
+                {% else %}
+                    ({{ survey.expires_on_date|timeuntil }} {% trans "jäljellä" %})
+                {% endif %}
+            </span>
+        </div>
+        <div class="scheme-content-list-item-text">
+            {% trans "Vastauksia" %} {{ survey.content_object.submissions.count }}
+
+        </div>
+    </div>
+</li>

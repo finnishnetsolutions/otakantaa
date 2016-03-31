@@ -1,0 +1,17 @@
+{% load i18n %}
+
+<div>
+    {% if object.picture %}
+        {% include 'scheme/scheme_main_picture.html' %}
+    {% endif %}
+
+    {% if object in perm.content.CanEditScheme %}
+        <div>
+            {% if not object.picture %}
+                {% include "content/scheme_fragment_edit_link.html" with fragment="picture" title=_("Lisää otsikkokuva") no_pull=True %}
+            {% else %}
+                {% include "content/scheme_fragment_edit_link.html" with fragment="picture" title=_("Vaihda otsikkokuva") no_pull=True %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

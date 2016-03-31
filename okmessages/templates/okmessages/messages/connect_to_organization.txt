@@ -1,0 +1,7 @@
+{% load i18n %}{% trans "Palveluun rekisteröitynyt käyttäjä haluaa liittyä organisaation yhteyshenkilöksi." %}
+
+{% trans "Käyttäjä" %}: <a href="{{ u_url }}">{{ user }}</a>
+{% trans "Organisaatio" %}: <a href="{{ o_url }}">{{ organization }}</a>
+
+<a href="{% url 'okadmin:moderation_queue' %}">{% trans "Siirry moderointijonoon" %}</a>
+

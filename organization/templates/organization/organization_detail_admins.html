@@ -1,0 +1,16 @@
+{% load i18n fontawesome %}
+
+{% for admin in object.adminsettings_set.all %}
+    <div class="col-md-2 col-sm-4 col-xs-6">
+        {% include 'account/profile_picture.html' with user=admin.user img_class="no-border profile-pic-large" ph_class="no-border profile-pic-large" %}
+        <div class="clearfix"></div>
+
+        <a href="{{ admin.user.get_absolute_url }}">{{ admin.user.get_full_name|default:admin }}</a>
+
+        {% if not admin.approved %}
+            <span>(Odottaa Ylläpitäjän hyväksyntää)</span>
+        {% endif %}
+    </div>
+{% endfor %}
+
+{% include "organization/organization_fragment_edit_link.html" with fragment='admins' title=_("Muokkaa yhteyshenkilöitä") %}

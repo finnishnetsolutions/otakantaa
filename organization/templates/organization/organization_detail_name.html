@@ -1,0 +1,2 @@
+{% load bleach_tags %}
+<h1>{{ object.name }} {% include "organization/organization_fragment_edit_link.html" with fragment='name' title=_("Muokkaa nimeä") %}</h1>

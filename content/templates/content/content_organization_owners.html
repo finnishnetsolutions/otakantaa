@@ -1,0 +1,5 @@
+{% if object.written_as_organization %} |
+    {% for org in object.owners.unique_organizations.all %}
+        <a href="{{ org.get_absolute_url }}">{{ org }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+{% endif %}

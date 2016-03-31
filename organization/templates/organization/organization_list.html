@@ -1,0 +1,50 @@
+{% extends 'otakantaa/base.html' %}
+{% load i18n bootstrap3 staticfiles %}
+
+{% block title %}{% trans "Organisaatiot" %} - {{ block.super }}{% endblock title %}
+
+{% block js_extra %}
+    <script type="text/javascript" src="{% static "otakantaa/js/jquery.buttonselect.js" %}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(".scheme-boxes").babylongrid({heightDivisor: 1});
+        });
+    </script>
+{% endblock js_extra %}
+
+{% block content %}
+    <form id="organization_search_form" method="get">
+        <div class="well organization-search-well">
+            <h1>{% trans "Organisaatiot" %} <a class="btn btn-primary btn-lg pull-right" href="{% url 'organization:create' %}">{% trans "Uusi organisaatio" %}</a></h1>
+            <div class="row">
+                <div class="col-md-4">
+                    {% bootstrap_field searchform.words %}
+                </div>
+                <div class="col-md-4">
+                    {% bootstrap_field searchform.municipalities %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">{% bootstrap_icon "search" %} {% trans "Hae" %}</button>
+        </div>
+        <div class="text-center">
+            {% bootstrap_field searchform.type_or_activity %}
+        </div>
+    </form>
+
+    <div class="scheme-boxes">
+        {% for object in object_list %}
+            <article class="scheme-box">
+                <div class="scheme-box-content">
+                    <a href="{{ object.get_absolute_url }}">{% include "organization/organization_picture.html" %}</a>
+                    <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+
+                    <div class="participation-stats">{% trans "Hankkeita" %} {{ object.get_real_schemes.public.count }}</div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+    <div class="text-center">
+        {% bootstrap_pagination page_obj url=request.path|add:"?"|add:request.GET.urlencode %}
+    </div>
+{% endblock %}

@@ -1,0 +1,5 @@
+{% load moderation %}
+
+<p class="comment-text">{{ comment.comment|urlize|linebreaksbr }}</p>
+
+{% moderation_reasons comment %}

@@ -1,0 +1,59 @@
+{% load i18n static bootstrap3 %}
+
+<div class="ajaxy-wrap">
+
+    <a name="uusi-kommentti"></a>
+    <h4>{% trans "Vastaa" %}</h4>
+    {% include 'comments/premoderation_message.html' %}
+
+    <form id="comment-response-form" class="ajaxy-form" novalidate action="{% url 'conversation:post_response' conversation_id=comment.conversation.pk comment_id=comment.pk %}" method="post" data-ajaxy-success-target="#comments">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+
+        <input type="submit" name="submit" class="btn btn-primary" value="{% trans 'Lähetä vastaus' %}">
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+
+        var addQuote = function(triggerer) {
+            $('#id_quote').val(triggerer.attr('data-quote-id'));
+
+            var text = triggerer.parents('div.comment-content').find('.comment-text').html();
+            var name = triggerer.parents('article').find('.comment-name').html();
+
+            if (triggerer.parents('div.comment-content').find('textarea').length) {
+                text = triggerer.parents('div.comment-content').find('textarea').val()
+                console.log('textarea');
+            }
+
+            var quote = $('<blockquote/>', {
+                html: '<strong>' + name + ' kirjoitti:</strong><br>' + text
+            });
+            quote.expander({slicePoint: 100});
+            quote.insertAfter('#id_quote');
+        };
+
+        var removeQuote = function() {
+            $('#id_quote').val('');
+            var quote = $('#comment-response-form').find('blockquote');
+            if (quote !== undefined) {
+                quote.remove();
+            }
+        };
+
+        $(document).on('click', 'a[href="#uusi-kommentti"]', function() {
+            removeQuote();
+            if ($(this).hasClass('response-quote')) {
+                addQuote($(this));
+            }
+        });
+
+        var quote_pk = '{{ request.resolver_match.kwargs.quote_id }}';
+
+        if (quote_pk) {
+            $('.response-quote[data-quote-id="'+quote_pk+'"]').trigger('click');
+        }
+    });
+</script>

@@ -1,0 +1,26 @@
+{% extends 'otakantaa/base.html' %}
+{% load i18n bootstrap3 %}
+
+{% block content %}
+    <h1>{% trans "Omistajakutsun hyväksyminen" %}</h1>
+    <div class="well">
+        <p>
+        {% if object.organization %}
+            {% blocktrans with object.organization as org %}
+                Sinut on kutsuttu hankkeen omistajaksi organisaation ({{ org }}) yhteyshenkilönä
+            {% endblocktrans %}
+        {% else %}
+            {% trans "Sinut on kutsuttu hankkeen omistajaksi" %}
+        {% endif %}
+        </p>
+
+        <p>{% trans "Hanke" %}: <a target="_blank" href="{{ object.scheme.get_absolute_url }}">{{ object.scheme }}</a></p>
+
+        <form action="{{ request.path }}" method="post" novalidate>
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button class="btn btn-primary" type="submit">{% bootstrap_icon "ok" %} {% trans "Tallenna" %}</button>
+            <div class="clearfix"></div>
+        </form>
+    </div>
+{% endblock content %}

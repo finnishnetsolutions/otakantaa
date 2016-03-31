@@ -1,0 +1,33 @@
+{% load i18n staticfiles fontawesome %}
+
+<li class="scheme-content-list-item">
+    <div class="scheme-content-list-item-picture">
+        <div class="profile-pic-small">
+            {% include 'account/profile_picture.html' with small=True no_link=True user=comment.user %}
+        </div>
+    </div>
+    <div class="scheme-content-list-item-content row">
+        <div class="scheme-content-list-item-texts scheme-content-list-item-col-10">
+            <div class="scheme-content-list-item-title-comment">
+                <a href="{% url 'conversation:comment_detail' conversation_id=comment.conversation_id comment_id=comment.pk %}#kommentti-{{ comment.pk }}">
+                    {% if comment.is_removed %}
+                        {% trans "Kommentti poistettu" %}
+                    {% else %}
+                        {{ comment.title|truncatechars:80 }}
+                    {% endif %}
+                </a>
+            </div>
+            <div class="scheme-content-list-item-comment">
+                {% if comment.is_removed %}
+                    ...
+                {% else %}
+                    {{ comment.comment|truncatechars:80 }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="scheme-content-list-item-stats scheme-content-list-item-col-2" title="{% trans 'Kommentin vastausten lukumäärä' %}">
+            <span title="{% trans 'Kommentin vastausten lukumäärä' %}">{% fa_icon "comment" alt=_("Puhekupla") %} {{ comment.responses.public.count }}</span><br>
+            {{ comment.created|date:"SHORT_DATE_FORMAT" }}
+        </div>
+    </div>
+</li>

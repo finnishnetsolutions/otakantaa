@@ -1,0 +1,20 @@
+{% spaceless %}
+    {% if object.written_as_organization %}
+        {% for organization in object.owners.unique_organizations.all %}
+            <a href="{{ organization.get_absolute_url }}">{{ organization }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        {% for scheme_owner in object.owners.real %}
+            {% if profile_pictures %}
+                <div class="inline-block">
+                    <div class="profile-pic-inline-block">
+                        {% include 'account/profile_picture.html' with small=True no_link=True user=scheme_owner.user %}
+                    </div>
+                    <span class="scheme-owner">{{ scheme_owner }}</span>{% if not forloop.last %}, {% endif %}
+                </div>
+            {% else %}
+                <span class="scheme-owner">{{ scheme_owner }}</span>{% if not forloop.last %}, {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endspaceless %}

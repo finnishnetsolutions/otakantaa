@@ -1,0 +1,4 @@
+{% load i18n moderation %}
+
+<p class="comment-removed">{{ comment.created }}. {% if comment.is_response %}{% trans "Vastaus poistettu" %}{% else %}{% trans "Kommentti poistettu" %}{% endif %}.</p>
+{% moderation_reasons comment %}

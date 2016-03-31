@@ -1,0 +1,11 @@
+{% load i18n bleach_tags %}
+
+<p class="unsafe">
+    {% if object.html_allowed %}
+        {{ object.summary|bleach }}
+    {% else %}
+        {{ object.summary|linebreaksbr }}
+    {% endif %}
+</p>
+
+{% include "content/scheme_fragment_edit_link.html" with fragment='summary' title=_("Muokkaa yhteenvetoa") no_pull=True %}

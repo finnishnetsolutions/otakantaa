@@ -1,0 +1,27 @@
+{% load i18n comments fontawesome %}
+
+<a class="btn btn-default" href="{% url 'content:participation:conversation_detail' scheme_id=request.participation_detail.scheme.pk participation_detail_id=request.participation_detail.pk %}">{% trans "Katso muut kommentit" %}</a>
+
+{% if object.conversation in perm.conversation.CanCommentConversation %}
+    <a class="btn btn-primary pull-right" href="#uusi-kommentti">{% fa_icon "comment" alt=_("Puhekupla") %} {% trans "Vastaa" %}</a>
+    <div class="clearfix"></div>
+{% endif %}
+
+{% include 'comments/comment_item_comment_detail.html' %}
+
+{% for response in object.responses.public.all %}
+    {% include 'comments/comment_response_item.html' with comment=response response_link='#uusi-kommentti' %}
+{% endfor %}
+
+<hr>
+
+{% if object.conversation in perm.conversation.CanCommentConversation %}
+    {% get_comment_form 'form' get_response_form=True %}
+    {% include 'comments/comment_response_form.html' with comment=object %}
+{% endif %}
+
+<script type="text/javascript">
+    $(function() {
+        $('blockquote').expander();
+    });
+</script>

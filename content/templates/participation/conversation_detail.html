@@ -1,0 +1,26 @@
+{% extends 'participation/participation_base.html' %}
+
+{% load i18n fontawesome %}
+
+{% block title %}{% trans "Keskustelu" %}: {{ request.participation_detail }} - {{ block.super }}{% endblock title %}
+
+{% block precontent %}
+    {% include 'otakantaa/temp/kommentointi_painike.html' with toiminto='keskustelu' %}
+{% endblock precontent %}
+
+{% block content_participation_count %}
+    {% include "participation/conversation_count.html" with count=request.participation_detail.content_object.comments.public.count %}
+{% endblock content_participation_count %}
+
+{% block content_details %}
+    {% trans "Keskustelu" %} {{ block.super }}
+{% endblock content_details %}
+
+{% block content_subcontent %}
+    <a name="comments"></a>
+    {% if request.participation_detail in perm.content.NeedsLoginForParticipation %}
+        <div class="alert alert-info">{% trans "Vain kirjautuneet käyttäjät voivat osallistua tähän keskusteluun" %}</div>
+    {% endif %}
+
+    <div id="comments">{% include 'comments/comments_preview.html' with conversation=request.participation_detail.content_object %}</div>
+{% endblock content_subcontent %}

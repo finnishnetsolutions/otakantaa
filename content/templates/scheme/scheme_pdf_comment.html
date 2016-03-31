@@ -1,0 +1,25 @@
+{% load i18n comments %}
+
+{% if comment.is_removed %}
+    {% include 'comments/comment_item_removed.html' %}
+{% else %}
+    {% if comment.title %}
+        <div class="comment-title">{{ comment.title }}</div>
+    {% endif %}
+
+    <div class="comment-details">
+        {% if comment.user %}
+            {{ comment.user }}
+        {% else %}
+            {% trans "Anonyymi kommentoija" %}
+        {% endif %}
+
+        {{ comment.created }}
+
+        {% with vote_balance=comment|vote_balance %}
+            <span class="thumbs-counter{% if vote_balance < 0 %} negative{% endif %}">{{ vote_balance }}</span>
+        {% endwith %}
+    </div>
+
+    <p>{{ comment.comment }}</p>
+{% endif %}

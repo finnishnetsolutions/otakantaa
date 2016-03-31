@@ -1,0 +1,7 @@
+{% load i18n configs %}
+{% block subject %}{% endblock subject %}
+{% block content %}{% endblock content %}
+
+{% block footer %}--------------
+{% blocktrans %}Tämä on otakantaa.fi-palvelun automaattisesti lähettämä ilmoitus. Älä vastaa tähän viestiin.{% endblocktrans %}
+{% block link %}{% endblock link %}{% endblock footer %}

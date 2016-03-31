@@ -1,0 +1,63 @@
+
+{% extends 'otakantaa/base.html' %}
+
+{% load i18n bootstrap3 staticfiles %}
+
+{% block precontent %}
+    {% include 'otakantaa/temp/kommentointi_painike.html' with toiminto='hanke' %}
+{% endblock precontent %}
+
+{% block title %}{% trans "Hanke" %}: {% trans "Uusi hanke" %} - {{ block.super }}{% endblock title %}
+
+{% block js_extra %}
+    <script type="text/javascript" src="{% static "otakantaa/js/jquery.charcount.js" %}"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $('input[name="target_type"]').on('change', function () {
+                if($(this).prop('checked')) {
+                    $('#id_target_municipalities_wrap').toggle($(this).val() === '{{ form.TARGET_TYPE_MUNICIPALITIES }}');
+                }
+            });
+
+            $('input[name="target_type"]:checked').trigger('change');
+
+            // "Write as" scripts.
+
+            $('input[name="write_as"]').change(function() {
+                if ($(this).val() == {{ form.WRITE_AS_USER }})
+                {
+                    $("#id_own_organizations_wrap").hide();
+                    $("#id_invited_admins_wrap").hide();
+                    $("#id_owners_wrap").show();
+                }
+                else if ($(this).val() == {{ form.WRITE_AS_ORGANIZATION }})
+                {
+                    $("#id_own_organizations_wrap").show();
+                    $("#id_invited_admins_wrap").show();
+                    $("#id_owners_wrap").hide();
+                }
+            });
+
+            $('input[name="write_as"]:checked').trigger('change');
+
+            $('#id_lead_text').children('.multilingo-language-version').charsLeft({
+                'infoText': '{% trans "merkkiä jäljellä" %}',
+            });
+        });
+    </script>
+{% endblock js_extra %}
+
+{% block content %}
+    <h1>{% trans "Uusi hanke" %}</h1>
+    <div class="alert alert-info">
+        {% trans "Täytä hankkeen perustiedot. Kiinnitä erityistä huomiota otsikon ja tiivistelmän ymmärrettävyyteen." %}
+        {% trans "Tallentamisen jälkeen voit vielä muokata perustietoja sekä lisätä hankkeeseen mm. kyselyitä ja keskusteluita." %}
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">{% trans "Tallenna hanke" %}</button>
+    </form>
+{% endblock content %}

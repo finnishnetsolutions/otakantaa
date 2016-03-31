@@ -1,0 +1,36 @@
+{% load i18n scheme_tags %}
+
+<div class="ajaxy-wrap">
+    <div class="container">
+        <div class="scheme-list">
+            {% for object in object_list %}
+                <div class="row display-table">
+                    <div class="col-sm-6 display-cell">
+                        <h3><a href="{% url 'content:scheme_detail' scheme_id=object.pk %}">{{ object.title }}</a></h3>
+                        {% if show_tags %}
+                            {{ object.tags.all|join:", " }}
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-3 display-cell participation-stats">
+                        {% include 'content/participations_count_container.html' with object=object %}
+                    </div>
+                    <div class="col-sm-3 display-cell">
+                        <div class="owner-list">{% include "scheme/scheme_owners.html" %}</div>
+                        <div class="target-municipalities">
+                            {{ object.target_municipalities.all|join:", " }}
+                        </div>
+                        <div class="released-date">{{ object.status_complete }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if page_obj.has_next %}
+        <div class="text-center margin-top-3">
+            <a href="{% load_schemes_url page_obj %}" class="btn btn-default load-schemes-btn ajaxy-link" data-ajaxy-target-method="replaceWith">
+                {% trans "Näytä lisää" %}
+            </a>
+        </div>
+    {% endif %}
+</div>

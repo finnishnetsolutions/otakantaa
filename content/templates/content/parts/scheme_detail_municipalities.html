@@ -1,0 +1,11 @@
+{% load i18n fontawesome %}
+<strong>{% trans "Kunnat" %}: </strong>
+<ul class="list-inline comma-list">
+    {% for m in object.target_municipalities.all %}
+        <li class="tag">{{ m }}</li>
+    {% endfor %}
+</ul>
+
+<div class="margin-top-sm">
+    {% include "content/scheme_fragment_edit_link.html" with fragment='municipalities' title=_("Muokkaa kuntia") no_pull=True %}
+</div>

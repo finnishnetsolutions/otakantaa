@@ -1,0 +1,5 @@
+{% load i18n %}{% block content %}{% endblock content %}
+{% block footer %}
+{% trans "Terveisin" %},
+{% trans "otakantaa.fi" %}
+{% endblock footer %}

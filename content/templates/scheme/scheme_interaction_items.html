@@ -1,0 +1,13 @@
+{% load i18n fontawesome %}
+
+{% for val, text in object.INTERACTION_CHOICES %}
+    <li>
+        <a href="{% url 'content:scheme_set_interaction' scheme_id=object.pk interaction=val %}" class="ajaxy-link" data-ajaxy-method="post">
+            {% if object.interaction == val %}
+                {% fa_icon "check" "fw" %}
+            {% else %}
+                {% fa_icon "fw" %}
+            {% endif %} {{ text }}
+        </a>
+    </li>
+{% endfor %}

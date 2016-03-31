@@ -1,0 +1,33 @@
+{% load i18n bootstrap3 staticfiles widget_tags %}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">{% trans "Widget" %}</h4>
+</div>
+<div class="modal-body">
+    {% if widget_help_text %}
+        <p>{{ widget_help_text }}</p>
+    {% endif %}
+    <p>{% trans "Alareunasta löydät iframe-koodin, jonka voit upottaa verkkosivuillesi." %}</p>
+
+    <div class="widget-modal-refreshers">
+        {% block widget_fields %}
+            {% bootstrap_field form.limit bound_css_class=" " error_css_class=" " %}
+        {% endblock widget_fields %}
+    </div>
+
+    <label class="control-label">{% trans "Esikatselu" %}</label>
+    <div class="widget-modal-preview" data-widget-url="{{ widget_url }}" data-base-url="{{ request.get_host }}">
+        {% include content_template_name %}
+    </div>
+
+    <label class="control-label">{% trans "Koodi" %}</label>
+    <textarea class="widget-modal-code form-control"><iframe src="{{ request.get_host }}{{ widget_url }}"></iframe></textarea>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Sulje" %}</button>
+</div>
+
+<script type="text/javascript" src="{% static 'widget/js/widget_modal.js' %}"></script>

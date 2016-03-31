@@ -1,0 +1,8 @@
+{% extends 'comments/comment_item_base.html' %}
+{% load i18n %}
+
+{% block response_link %}
+    {% if conversation in perm.conversation.CanCommentConversation %}
+        <a href="{% url 'conversation:comment_detail' conversation_id=conversation.pk comment_id=comment.pk %}#uusi-kommentti">{% trans "Vastaa" %}</a> <span>({{ comment.responses.public.count }})</span>
+    {% endif %}
+{% endblock response_link %}

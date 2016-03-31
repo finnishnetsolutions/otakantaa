@@ -1,0 +1,22 @@
+{% extends 'comments/comment_item_base.html' %}
+{% load i18n moderation %}
+
+{% block article_class %}response{% endblock article_class %}
+
+{% block quote %}
+    {% if comment.quote %}
+        {% if comment.quote.is_removed %}
+            <blockquote class="quote-target-removed">{% trans "Lainattu vastaus on poistettu." %}</blockquote>
+        {% else %}
+            <blockquote><strong>{{ comment.quote.name }} {% trans "kirjoitti" %}:</strong> <br>
+            {% include 'comments/comment_text.html' with comment=comment.quote %}
+            </blockquote>
+        {% endif %}
+    {% endif %}
+{% endblock quote %}
+
+{% block response_link %}
+    {% if comment.conversation in perm.conversation.CanCommentConversation %}
+        <a href="{{ response_link }}" class="response-quote" data-quote-id="{{ comment.pk }}">{% trans "Vastaa lainaten" %}</a>
+    {% endif %}
+{% endblock response_link %}

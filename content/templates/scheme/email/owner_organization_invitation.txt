@@ -1,0 +1,4 @@
+{% extends "otakantaa/email/base.txt" %}{% load i18n configs %}{% block content %}{% blocktrans %}Organisaatiosi {{ organization }} on kutsuttu hankkeen {{ scheme }} omistajaksi.{% endblocktrans %}
+
+{% trans "Hyväksy tai hylkää kutsu alla olevan linkin kautta." %}
+{% base_url as url %}{{ url }}{{ invitation_url }} {% endblock content %}

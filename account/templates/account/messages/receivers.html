@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% spaceless %}
+    {% if message.feedback or message.is_system_message %}
+        {% trans "Moderaattorit" %}
+    {% elif message.receivers.all %}
+        {% include "okmessages/receiver_list.html" with receivers=message.receivers.all %}
+    {% endif %}
+{% endspaceless %}

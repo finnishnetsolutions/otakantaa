@@ -1,0 +1,10 @@
+{% load fontawesome staticfiles i18n %}
+<div class="organization-picture-wrap">
+    <img class="{{ img_class }}" src="{% spaceless %}
+        {% if object.picture %}
+            {{ object.picture_medium.url }}
+        {% else %}
+            {% static 'otakantaa/img/organisaatio_placeholder200x200.png' %}
+        {% endif %}
+        " alt="{% trans "Organisaation profiilikuva" %} - {{ object.name }}">{% endspaceless %}
+</div>

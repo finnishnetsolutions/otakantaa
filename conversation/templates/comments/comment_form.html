@@ -1,0 +1,15 @@
+{% load i18n static bootstrap3 %}
+
+<div class="ajaxy-wrap">
+
+    <a name="uusi-kommentti"></a>
+    <h4>{% trans "Lisää uusi Kommentti" %}</h4>
+    {% include 'comments/premoderation_message.html' %}
+
+    <form class="ajaxy-form" novalidate action="{% url 'conversation:post_comment' conversation_id=conversation.pk %}" method="post" data-ajaxy-success-target="#comments">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+
+        <input type="submit" name="submit" class="btn btn-primary" value="{% trans 'Lähetä kommentti' %}">
+    </form>
+</div>

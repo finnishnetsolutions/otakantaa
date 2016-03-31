@@ -1,0 +1,130 @@
+{% extends 'otakantaa/base.html' %}
+
+{% load i18n staticfiles fontawesome flagging moderation %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-10">
+            <div id="title" class="ajaxy-wrap editable-wrap text-center-sm">
+                {% block content_title %}{% endblock content_title %}
+            </div>
+
+            <div class="content-details-hide">
+                <button class="text-button" aria-expanded="false" aria-controls="content-details-collapse">
+                    {% fa_icon "minus-circle" alt=_("Miinus") %} {% trans "Piilota tiedot" %}
+                </button>
+            </div>
+            <div class="content-details-show">
+                <button class="text-button" aria-expanded="false" aria-controls="content-details-collapse">
+                    {% fa_icon "plus-circle" alt=_("Plus") %} {% trans "Näytä tiedot" %}
+                </button>
+            </div>
+
+            <div id="content-details-collapse" class="collapse in">
+                <div class="margin-top-1 participation-stats content-detail-participation-stats text-center-sm">
+                    {% block content_participation_count %}{% endblock content_participation_count %}
+                </div>
+                <div class="margin-top-1 content-details text-center-sm">
+                    {% block content_details %}{% endblock content_details %}
+                </div>
+            </div>
+
+            <div class="content-details-hide">
+                <button class="text-button" aria-expanded="false" aria-controls="content-details-collapse">
+                    {% fa_icon "minus-circle" alt=_("Miinus") %} {% trans "Piilota tiedot" %}
+                </button>
+            </div>
+        </div>
+        <div class="col-md-2 hidden-xs hidden-sm">
+            {% block content_header_right_part %}{% endblock content_header_right_part %}
+        </div>
+    </div>
+
+    <div class="row margin-top-2">
+        <div id="precontent" class="col-md-12">
+            {% block content_precontent %}{% endblock content_precontent %}
+        </div>
+    </div>
+
+    <div class="row margin-top-1">
+        <div class="col-md-4 col-lg-3 content-sidebar-wrap">
+            <div class="content-sidebar">
+                {% block content_sidebar_precontent %}
+                    <h2>
+                        <span class="hidden-md hidden-lg menu-button content-sidebar-toggle" aria-expanded="false" aria-controls="content-sidebar-collapse">
+                            {% fa_icon "bars" alt=_("Avaa valikko") %}
+                        </span>
+                        {# ugly hack to add padding between menu button and h2 text on small screen #}
+                        <span class="hidden-md hidden-lg">&nbsp;&nbsp;&nbsp;</span>
+                        {% trans "Osallistu hankkeeseen" %}
+                    </h2>
+                {% endblock content_sidebar_precontent %}
+
+                <div id="content-sidebar-collapse" class="collapse in">
+                    {% block content_sidebar_content %}
+                    {% endblock content_sidebar_content %}
+
+                    {% block content_sidebar_postcontent %}
+                        <div class="content-sidebar-actions">
+                            {% block content_sidebar_tools %}
+                                {% block content_sidebar_tools_menu %}
+                                    <div class="btn-group btn-block" role="group" aria-label="{% trans 'Työkalut' %}">
+                                        <button type="button" class="responsive-btn btn btn-default btn-block dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {% trans "Työkalut" %} <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% block content_sidebar_tools_menu_items %}{% endblock content_sidebar_tools_menu_items %}
+                                        </ul>
+                                    </div>
+                                {% endblock content_sidebar_tools_menu %}
+                            {% endblock content_sidebar_tools %}
+                        </div>
+                    {% endblock content_sidebar_postcontent %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 col-lg-9 content-contents-wrap">
+            <div class="content-maincontent">
+                {% block content_maincontent %}
+
+                    {# this if-clause works on both scheme and pd objects #}
+                    {% if object.status != object.STATUS_DRAFT or request.participation_detail and request.participation_detail.status != request.participation_detail.STATUS_DRAFT %}
+                        <button class="text-button center-block content-details-collapse-button" aria-expanded="false" aria-controls="collapsableDetails"
+                                data-toggle="collapse" data-target="#collapsableDetails">
+                            {% fa_icon "plus-circle" alt=_("Plus") %} {% trans "Näytä lisätiedot" %}
+                        </button>
+                        <button class="text-button center-block content-details-collapse-button" aria-expanded="true" aria-controls="collapsableDetails"
+                                data-toggle="collapse" data-target="#collapsableDetails" style="display:none;">
+                            {% fa_icon "minus-circle" alt=_("Plus") %} {% trans "Piilota lisätiedot" %}
+                        </button>
+                    {% endif %}
+                    <div id="collapsableDetails"{% if object.status != object.STATUS_DRAFT or request.participation_detail and request.participation_detail.status != request.participation_detail.STATUS_DRAFT %} class="collapse" {% endif %}>
+                        {% block content_collapsable_content %}
+
+                            <div class="row">
+                                <div class="col-md-6 perustiedot">
+                                    <h3>{% trans "Perustiedot" %}</h3>
+                                    {% block content_maincontent_basics %}{% endblock content_maincontent_basics %}
+                                </div>
+                                <div class="col-md-6">
+                                    <h3>{% trans "Liitteet" %}</h3>
+                                    {% block content_maincontent_attachments %}{% endblock content_maincontent_attachments %}
+                                </div>
+                            </div>
+
+                            <div class="margin-top-1">{% moderation_reasons object %}</div>
+                            <div class="clear"></div>
+                        {% endblock content_collapsable_content %}
+                    </div>
+                    {% flag_link object 'Ilmianna' 'pull-right' %}
+                    <br>
+                {% endblock content_maincontent %}
+                <hr>
+            </div>
+            {% block content_subcontent %}{% endblock content_subcontent %}
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{% static 'content/js/content.js' %}"></script>
+{% endblock content %}

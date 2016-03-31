@@ -1,0 +1,55 @@
+{% load fontawesome time_filters i18n participations %}
+
+{% get_participations scheme as published %}
+
+<ul class="participation-list">
+    {% for participation in published %}
+        <li{% if participation.is_expired %} class="expired"{% endif %} id="pd-{{ participation.pk }}">
+            <div class="participation-list-column icon-column">
+                {% if participation.is_survey %}
+                    {% fa_icon "question-circle" alt=_("Kysely") %}
+                {% elif participation.is_conversation %}
+                    {% fa_icon "comment" alt=_("Keskustelu") %}
+                {% endif %}
+            </div>
+            <div class="participation-list-column">{% spaceless %}
+                {% if participation == active %}
+                    {{ participation }}
+                {% else %}
+                    <a href="{{ participation.get_absolute_url }}">{{ participation }}</a>
+                {% endif %}
+                <span class="details">
+                    {% if not participation.is_open %}
+                        ({{ participation.get_status_display }})
+                    {% else %}
+                        ({{ participation.participations_count }})
+                        {{ participation.expires_on_date|days_until }}
+                    {% endif %}
+                </span>{% endspaceless %}
+            </div>
+        </li>
+{% endfor %}
+</ul>
+<div class="margin-bottom-1">
+    <a id="show-expired-switch" style="display:none;">{% trans "Näytä päättyneet keskustelut ja kyselyt" %}</a>
+</div>
+<div class="clearfix"></div>
+
+<script type="text/javascript">
+    $(function() {
+        var active = "#pd-{{ active.pk }}";
+
+        if ($('.expired').length) {
+            $('#show-expired-switch').show();
+        }
+
+        $('#show-expired-switch').on('click', function() {
+            $('.expired').show();
+            $(this).remove();
+        });
+
+        if ($(active).hasClass('expired')) {
+            $('#show-expired-switch').trigger('click');
+        }
+    });
+</script>

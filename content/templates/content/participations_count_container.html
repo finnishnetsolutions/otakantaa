@@ -1,0 +1,6 @@
+{% if object.participations.conversations.published %}
+    {% include "participation/conversation_count.html" with count=object.conversation_comment_count %}
+{% endif %}
+{% if object.participations.surveys.published %}
+    {% include "participation/survey_count.html" with count=object.survey_submission_count %}
+{% endif %}

@@ -1,0 +1,17 @@
+{% load bootstrap3 i18n static %}
+
+<form id="attachment-form" action="{{ request.path }}" method="post" class="ajaxy-form" novalidate data-ajaxy-error-target="#attachment-form-wrap">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <button class="btn btn-primary" type="submit">{% bootstrap_icon "ok" %} {% trans "Tallenna" %}</button>
+    <div id="attachment-loader-gif" style="display:none;"><img src="{% static 'otakantaa/img/ajax-loader.gif' %}" alt="{% trans "Latausikoni" %}"></div>
+    <div class="clearfix"></div>
+</form>
+
+<script type="text/javascript">
+    $(function() {
+        $("#attachment-form").on('submit', function() {
+            $("#attachment-loader-gif").show().attr('class', 'display-inline');
+        });
+    });
+</script>

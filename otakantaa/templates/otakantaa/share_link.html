@@ -1,0 +1,43 @@
+{% load i18n fontawesome otakantaa_tags %}
+
+{% okfirstof url ABSOLUTE_URI as share_url %}
+
+<div style="display:inline-block;">
+    <div class="share-buttons">
+        <a href="http://www.facebook.com/sharer.php?u={{ share_url|iriencode }}{{ anchor }}" target="_blank" title="{% trans 'Jaa Facebookissa' %}" onclick="return !window.open(this.href, 'Facebook', 'width=640,height=300')">
+            {% fa_icon 'facebook' alt=_("Jaa Facebookissa") %}
+        </a> <span class="sr-only">|</span>
+        <a href="https://twitter.com/intent/tweet?url={{ share_url|iriencode }}{{ anchor }}" target="_blank" title="{% trans 'Jaa Twitterissä' %}" onclick="return !window.open(this.href, 'Twitter', 'width=640,height=300')">
+            {% fa_icon 'twitter' alt=_("Jaa Twitterissä") %}
+        </a> <span class="sr-only">|</span>
+        <a href="https://plus.google.com/share?hl=en&amp;url={{ share_url|iriencode }}{{ anchor }}" target="_blank" title="{% trans 'Jaa Google+:ssa' %}" onclick="return !window.open(this.href, 'Google+', 'width=640,height=300')">
+            {% fa_icon 'google-plus' alt=_("Jaa Google+:ssa") %}
+        </a> <span class="sr-only">|</span>
+        <a href="whatsapp://send?text={{ share_url|iriencode }}{{ anchor }}" class="wa_button" style="display:none" title="{% trans "Jaa WhatsAppissa" %}" onclick="return !window.open(this.href, 'WhatsApp', 'width=640,height=300')">
+            {% fa_icon 'whatsapp' alt=_("Jaa WhatsAppissa") %}
+        </a> <span class="sr-only">|</span>
+        <a href="mailto:?subject=otakantaa.fi%20-%20{{ object|iriencode }}&amp;body=%0A{{ share_url|iriencode }}{{ anchor }}" title="{% trans 'Jaa sähköpostilla' %}">
+            {% fa_icon 'at' alt=_("Jaa sähköpostilla") %}
+        </a>
+        {% if not anchor %}
+            <span class="sr-only">|</span>
+            <a href="#" title="{% trans "Tulosta" %}" onclick="return window.print();">{% fa_icon 'print' alt=_("Tulosta") %}</a>
+        {% endif %}
+    </div>
+    <span class="share-link">{% spaceless %}
+        {% if not noicon %}{% fa_icon 'share-square' alt=_("Jaa sisältöä") %} {% endif %} {% trans "Jaa" %}
+    {% endspaceless %}</span>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        if (navigator.userAgent.match(/Android|iPhone/i) && !navigator.userAgent.match(/iPod|iPad/i)) {
+            $('.wa_button').show();
+        }
+
+        $('.share-link').on('click', function() {
+            $(this).siblings('.share-buttons').css('display', 'inline-block');
+            $(this).remove();
+        });
+    });
+</script>

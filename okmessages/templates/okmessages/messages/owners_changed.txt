@@ -1,0 +1,3 @@
+{% load i18n %}{% trans "Hankkeen omistajia on muutettu." %}
+
+{% trans "Hanke" %}: <a href="{{ scheme.get_absolute_url }}">{{ scheme }}</a>

@@ -1,0 +1,8 @@
+{% extends "widget/widget_modal.html" %}
+
+{% load bootstrap3 %}
+
+{% block widget_fields %}
+    {{ block.super }}
+    {% bootstrap_field form.language bound_css_class=" " error_css_class=" " %}
+{% endblock widget_fields %}

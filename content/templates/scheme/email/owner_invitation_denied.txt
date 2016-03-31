@@ -1,0 +1,4 @@
+{% extends "otakantaa/email/base.txt" %}{% load i18n configs %}{% block content %}{% blocktrans %}{{ obj }} kieltäytyi kutsusta hankkeen {{ scheme }} omistajaksi.{% endblocktrans %}
+
+{% trans "Katso hankkeen tiedot." %}
+{% base_url as url %}{{ url }}{{ scheme.get_absolute_url }} {% endblock content %}
