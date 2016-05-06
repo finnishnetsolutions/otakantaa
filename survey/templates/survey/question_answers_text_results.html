@@ -1,4 +1,4 @@
-{% load i18n bootstrap3 %}
+{% load i18n bootstrap3 otakantaa_tags %}
 
 <ul class="list-group ajaxy-wrap">
     {% for answer in answers %}
@@ -13,7 +13,7 @@
 
     {% if paginate and answers.paginator.num_pages > 1 %}
         <li class="list-group-item survey-question-answers-pagination">
-            {% bootstrap_pagination page=answers url=pagination_url %}
+            {% bootstrap_ajaxy_pagination page=answers url=pagination_url %}
         </li>
     {% endif %}
 </ul>

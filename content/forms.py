@@ -341,18 +341,24 @@ class EditSchemeOwnersForm(EditSchemeOwnersBaseForm):
         }
         self.fields['owners'].widget.instance = self.instance
 
+    def get_initial_owners_user_list(self):
+        initial_users = []
+        for o in self.initial['owners']:
+            initial_users.append(o.user)
+        return initial_users
+
     def clean_owners(self):
         """The view should supply initial owners list containing the request.user,
         make sure s/he is still on the list."""
         owners = self.cleaned_data['owners']
-        if self.user.pk not in owners.values_list('pk', flat=True):
-            raise forms.ValidationError(_("Et voi poistaa itseäsi hankkeen omistajista."))
+
+        if not self.user.is_moderator or self.user in self.get_initial_owners_user_list():
+            if self.user.pk not in owners.values_list('pk', flat=True):
+                raise forms.ValidationError(_("Et voi poistaa itseäsi hankkeen omistajista."))
         return owners
 
     def has_changed(self):
-        initial_users = []
-        for o in self.initial['owners']:
-            initial_users.append(o.user)
+        initial_users = self.get_initial_owners_user_list()
         cleaned_users = []
         for o in self.cleaned_data['owners']:
             cleaned_users.append(o)
@@ -386,8 +392,14 @@ class EditSchemeAdminOwnersForm(EditSchemeOwnersBaseForm):
                 self_in_owners = True
                 break
 
-        if not self_in_owners:
-            raise forms.ValidationError(_("Et voi poistaa itseäsi hankkeen omistajista."))
+        initial_users = []
+        for o in self.initial['owners']:
+            initial_users.append(o.user)
+
+        if not self.user.is_moderator or self.user in initial_users:
+            if not self_in_owners:
+                raise forms.ValidationError(
+                    _("Et voi poistaa itseäsi hankkeen omistajista."))
         return self.cleaned_data['owners']
 
     def build_conditions(self, obj):

@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import json
+from django.contrib.auth.models import Group
 import pytz
 import os
 from unittest.case import skipUnless
@@ -15,12 +16,12 @@ from django.conf import settings
 from django.core.files.base import File, ContentFile
 from django.utils.formats import date_format
 from django.template.defaultfilters import date
-from content.models import SchemeOwner
 
 from libs.attachtor.models.models import Upload, UploadGroup
 from libs.attachtor.utils import get_upload_signature
 
 from account.factories import UserFactory, DEFAULT_PASSWORD
+from account.models import GROUP_NAME_MODERATORS
 from conversation.factories import ConversationFactory, CommentFactory
 from conversation.models import Comment, Vote
 from organization.factories import OrganizationFactory
@@ -573,11 +574,12 @@ class SchemeEditFragmentTest(TestCase):
         u = self.scheme.owners.first().user
         self.client.login(username=u.username, password=DEFAULT_PASSWORD)
 
-    """
     def login_as_moderator(self):
-        mod = UserFactory(groups=[Group.objects.get(name=GROUP_NAME_MODERATORS)])
-        self.client.login(username=mod.username, password=DEFAULT_PASSWORD)
-        """
+        self.client.logout()
+        moderator = UserFactory(
+            groups=[Group.objects.get(name=GROUP_NAME_MODERATORS)]
+        )
+        self.client.login(username=moderator.username, password=DEFAULT_PASSWORD)
 
     def test_open_edit_title_fragment(self):
         resp = self.client.get('/fi/hankkeet/%d/muokkaa/otsikko/' % self.scheme.pk)
@@ -681,6 +683,22 @@ class SchemeEditFragmentTest(TestCase):
         })
         self.assertContains(resp, 'Et voi poistaa itseäsi hankkeen omistajista.')
 
+    def test_save_user_owners_fragment_as_moderator(self):
+        self.login_as_moderator()
+        resp = self.client.post('/fi/hankkeet/%d/muokkaa/omistajat/' % self.scheme.pk, {
+            'owners': [self.scheme.owners.first().user.pk, UserFactory().pk],
+            '_moderation_reason': 'any reason',
+        })
+        self.assertEqual(resp.status_code, 232)
+        self.assertEqual(Scheme.objects.get(pk=self.scheme.pk).owners.count(), 2)
+
+        resp = self.client.post('/fi/hankkeet/%d/muokkaa/omistajat/' % self.scheme.pk, {
+            'owners': [],
+            '_moderation_reason': 'some reason',
+        })
+        self.assertEqual(resp.status_code, 232)
+        self.assertEqual(Scheme.objects.get(pk=self.scheme.pk).owners.count(), 0)
+
     def test_save_admin_owners_fragment(self):
         owner = self.scheme.owners.first()
         user = owner.user
@@ -713,6 +731,41 @@ class SchemeEditFragmentTest(TestCase):
         self.assertContains(resp, 'Valitse hankkeen omistajat organisaatioiden '
                                   'yhteyshenkilöistä. Et voi poistaa itseäsi hankkeen '
                                   'omistajista.')
+
+    def test_save_admin_owners_fragment_as_moderator(self):
+        self.login_as_moderator()
+        owner = self.scheme.owners.first()
+        user = owner.user
+
+        AdminSettings.objects.create(user=user, organization=OrganizationFactory())
+        self.rehydrate(user)
+
+        owner.organization = user.organizations.first()
+        owner.save()
+
+        user2 = UserFactory()
+        AdminSettings.objects.create(user=user2, organization=OrganizationFactory())
+        self.rehydrate(user2)
+
+        self.assertEqual(self.scheme.written_as_organization(), True)
+
+        value1 = "{}:{}".format(user.pk, user.organizations.first().pk)
+        value2 = "{}:{}".format(user2.pk, user2.organizations.first().pk)
+
+        resp = self.client.post('/fi/hankkeet/%d/muokkaa/omistajat/' % self.scheme.pk, {
+            'owners': [value1, value2],
+            '_moderation_reason': 'any reason',
+        })
+
+        self.assertEqual(resp.status_code, 232)
+        self.assertEqual(Scheme.objects.get(pk=self.scheme.pk).owners.count(), 2)
+
+        resp = self.client.post('/fi/hankkeet/%d/muokkaa/omistajat/' % self.scheme.pk, {
+            'owners': [],
+            '_moderation_reason': 'any reason',
+        })
+        self.assertEqual(Scheme.objects.get(pk=self.scheme.pk).owners.count(), 0)
+
 
     def test_save_tags_fragment(self):
         self.assertEqual(self.scheme.tags.count(), 1)

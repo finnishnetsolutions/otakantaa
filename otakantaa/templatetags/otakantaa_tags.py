@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from __future__ import unicode_literals
+from bootstrap3.templatetags.bootstrap3 import get_pagination_context
 
 from django import template
 from django.conf import settings
@@ -64,3 +65,10 @@ def okfirstof(parser, token):
         asvar = bits[-1]
         bits = bits[:-2]
     return FirstOfNode([parser.compile_filter(bit) for bit in bits], asvar)
+
+
+@register.inclusion_tag('bootstrap3/ajaxy_pagination.html')
+def bootstrap_ajaxy_pagination(page, **kwargs):
+    pagination_kwargs = kwargs.copy()
+    pagination_kwargs['page'] = page
+    return get_pagination_context(**pagination_kwargs)

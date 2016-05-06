@@ -95,7 +95,7 @@ def survey_is_answered(survey, request):
 
 @register.inclusion_tag("survey/question_answers_text_results.html", takes_context=True)
 def show_text_answers(context, question, paginate=True):
-    answers = question.answers.all()
+    answers = question.answers.exclude(text="")
 
     if paginate:
         answers = answers.paginate()
